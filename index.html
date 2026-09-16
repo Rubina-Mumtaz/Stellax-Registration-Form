@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Apply to join Stellax Academy and start your learning journey.">
+	<title>Student Registration | Stellax Academy</title>
+	<!-- Google Fonts Preconnect -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Poppins Google Font Link -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Apni Main CSS File -->
+<link rel="stylesheet" href="css/style.css">
+<script src="JS/script.js" defer></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+	<div class="page-shell">
+		<header class="site-header">
+			<div class="header-inner">
+				<a class="brand" href="index.html" aria-label="Stellax Academy home">
+					<img src="Images/stellax logo White.png" alt="Stellax Academy logo">
+				</a>
+				<div class="header-copy">
+					<p class="eyebrow">Admissions Open</p>
+					<h1>Student Registration</h1>
+					<p>Start Your Learning Journey With Stellax Academy</p>
+				</div>
+			</div>
+		</header>
+
+		<main class="main-content">
+			<div class="registration-card">
+				<div class="intro">
+					<p>Complete the registration form below to apply for your selected course at Stellax Academy.</p>
+					<p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
+				</div>
+
+				<form id="registration-form" novalidate>
+					<fieldset>
+						<legend><span>01</span> Personal Information</legend>
+						<div class="field-grid two-columns">
+							<div class="field field-required">
+								<label for="full-name">Full Name <span aria-hidden="true">*</span></label>
+								<input type="text" id="full-name" name="fullName" autocomplete="name" required>
+								<p class="error-message" id="full-name-error" role="alert"></p>
+							</div>
+							<div class="field">
+								<label for="guardian-name">Father's / Guardian's Name</label>
+								<input type="text" id="guardian-name" name="guardianName" autocomplete="name">
+							</div>
+							<div class="field">
+								<label for="date-of-birth">Date of Birth</label>
+								<input type="date" id="date-of-birth" name="dateOfBirth">
+							</div>
+							<div class="field">
+								<span class="field-label">Gender</span>
+								<div class="option-row">
+									<label class="choice"><input type="radio" name="gender" value="Male"> <span>Male</span></label>
+									<label class="choice"><input type="radio" name="gender" value="Female"> <span>Female</span></label>
+									<label class="choice"><input type="radio" name="gender" value="Prefer not to say"> <span>Prefer not to say</span></label>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>02</span> Contact Information</legend>
+						<div class="field-grid two-columns">
+							<div class="field field-required">
+								<label for="email">Email Address <span aria-hidden="true">*</span></label>
+								<input type="email" id="email" name="email" autocomplete="email" required>
+								<p class="error-message" id="email-error" role="alert"></p>
+							</div>
+							<div class="field field-required">
+								<label for="phone">Phone Number <span aria-hidden="true">*</span></label>
+								<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" required>
+								<p class="error-message" id="phone-error" role="alert"></p>
+							</div>
+							<div class="field">
+								<label for="whatsapp">WhatsApp Number</label>
+								<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel">
+							</div>
+							<div class="field">
+								<label for="city">City</label>
+								<input type="text" id="city" name="city" autocomplete="address-level2">
+							</div>
+							<div class="field field-full">
+								<label for="address">Address</label>
+								<textarea id="address" name="address" rows="3" autocomplete="street-address"></textarea>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>03</span> Course Selection</legend>
+						<div class="field-grid">
+							<div class="field field-required">
+								<label for="course">Choose a Course <span aria-hidden="true">*</span></label>
+								<select id="course" name="course" required>
+									<option value="">Select a Course</option>
+									<option value="Digital Marketing">Digital Marketing</option>
+									<option value="Web &amp; App Development">Web &amp; App Development</option>
+									<option value="Graphic Designing">Graphic Designing</option>
+									<option value="Video Editing">Video Editing</option>
+									<option value="canva">Canva</option>
+									<option value="freelancing">Freelancing</option>
+								</select>
+								<p class="error-message" id="course-error" role="alert"></p>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>04</span> Education</legend>
+						<div class="field-grid two-columns">
+							<div class="field">
+								<label for="qualification">Highest Qualification</label>
+								<input type="text" id="qualification" name="qualification">
+							</div>
+							<div class="field">
+								<label for="institute">Institute / School / College / University</label>
+								<input type="text" id="institute" name="institute">
+							</div>
+							<div class="field">
+								<span class="field-label">Current Student?</span>
+								<div class="option-row">
+									<label class="choice"><input type="radio" name="currentStudent" value="Yes"> <span>Yes</span></label>
+									<label class="choice"><input type="radio" name="currentStudent" value="No"> <span>No</span></label>
+								</div>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>05</span> Learning Preference</legend>
+						<div class="field field-required">
+							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
+							<div class="preference-grid" id="learning-mode-group">
+								<label class="preference"><input type="radio" name="learningMode" value="Online"><span>Online</span></label>
+								<label class="preference"><input type="radio" name="learningMode" value="On Campus"><span>On Campus</span></label>
+								<label class="preference"><input type="radio" name="learningMode" value="Hybrid"><span>Hybrid</span></label>
+							</div>
+							<p class="error-message" id="learning-mode-error" role="alert"></p>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>06</span> Batch Preference</legend>
+						<div class="field field-required">
+							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
+							<div class="preference-grid" id="batch-group">
+								<label class="preference"><input type="radio" name="batch" value="Morning"><span>Morning</span></label>
+								<label class="preference"><input type="radio" name="batch" value="Afternoon"><span>Afternoon</span></label>
+								<label class="preference"><input type="radio" name="batch" value="Evening"><span>Evening</span></label>
+							</div>
+							<p class="error-message" id="batch-error" role="alert"></p>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>07</span> Additional Information</legend>
+						<div class="field-grid">
+							<div class="field">
+								<label for="motivation">Why do you want to join Stellax Academy?</label>
+								<textarea id="motivation" name="motivation" rows="5"></textarea>
+							</div>
+							<div class="field">
+								<label for="referral">How did you hear about us?</label>
+								<select id="referral" name="referral">
+									<option value="">Select an option</option>
+									<option>Facebook</option>
+									<option>Instagram</option>
+									<option>YouTube</option>
+									<option>LinkedIn</option>
+									<option>Google Search</option>
+									<option>Friend / Family</option>
+									<option>Other</option>
+								</select>
+							</div>
+						</div>
+					</fieldset>
+
+					<fieldset>
+						<legend><span>08</span> Agreement</legend>
+						<label class="agreement-choice" for="agreement">
+							<input type="checkbox" id="agreement" name="agreement" required>
+							<span>I confirm that the information provided in this application is correct.</span>
+						</label>
+						<p class="error-message" id="agreement-error" role="alert"></p>
+					</fieldset>
+
+					<div class="form-actions">
+						<button type="submit">Submit Application <span aria-hidden="true">&#8594;</span></button>
+						<p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+					</div>
+				</form>
+			</div>
+		</main>
+
+		<footer class="site-footer">&copy; Stellax Academy. All Rights Reserved.</footer>
+	</div>
+
+	<!-- 1. Supabase Library (CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2. Aapki JS File -->
+<script src="supabase/supabase.js"></script>
+</body>
+</html>
