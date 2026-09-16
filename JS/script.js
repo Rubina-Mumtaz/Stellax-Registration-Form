@@ -101,6 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------------
     const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const PHONE_PATTERN = /^\d{7,15}$/;
+    const CNIC_PATTERN = /^(?:\d{5}-\d{7}-\d|\d{13})$/;
 
     // ------------------------------------------------
     // Submit handler
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fullName = document.getElementById('full-name')?.value?.trim() || '';
         const email = document.getElementById('email')?.value?.trim() || '';
         const phone = document.getElementById('phone')?.value?.trim() || '';
-        const cnic = document.getElementById('cnic')?.value?.trim() || '';
+        const cnic = document.getElementById('cnic')?.value?.trim();
         const course = document.getElementById('course')?.value || '';
         const learningMode = form.querySelector("input[name='learningMode']:checked");
         const batch = form.querySelector("input[name='batch']:checked");
@@ -129,6 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hasErrors = setError('full-name', fullName ? '' : 'Please enter your full name.') || hasErrors;
         hasErrors = setError('email', !email ? 'Please enter your email address.' : !EMAIL_PATTERN.test(email) ? 'Please enter a valid email address.' : '') || hasErrors;
         hasErrors = setError('phone', !phone ? 'Please enter your phone number.' : !PHONE_PATTERN.test(phone.replace(/[\s().+-]/g, '')) ? 'Please enter a valid phone number.' : '') || hasErrors;
+        hasErrors = setError('cnic', !cnic ? 'Please enter your CNIC / B-Form number.' : !CNIC_PATTERN.test(cnic) ? 'Please enter a valid CNIC / B-Form number.' : '') || hasErrors;
         hasErrors = setError('course', course ? '' : 'Please select a course.') || hasErrors;
         hasErrors = setError('learning-mode', learningMode ? '' : 'Please choose a learning preference.') || hasErrors;
         hasErrors = setError('batch', batch ? '' : 'Please choose a batch preference.') || hasErrors;
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             full_name: fullName,
             email: email,
             phone_number: phone,
-            cnic_number: cnic ? cnic : 'N/A',
+            cnic_number: cnic,
             course_selected: course
         };
 
