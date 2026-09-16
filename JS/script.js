@@ -114,12 +114,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // ---- Safely capture values (optional chaining prevents
         //      "Cannot read properties of null" errors) ----
         const fullName = document.getElementById('full-name')?.value?.trim() || '';
+        const fatherName = document.getElementById('father-name')?.value?.trim()
+            || document.getElementById('guardian-name')?.value?.trim() || '';
+        const dob = document.getElementById('dob')?.value?.trim()
+            || document.getElementById('date-of-birth')?.value?.trim() || null;
+        const gender = document.getElementById('gender')?.value
+            || form.querySelector("input[name='gender']:checked")?.value || '';
         const email = document.getElementById('email')?.value?.trim() || '';
         const phone = document.getElementById('phone')?.value?.trim() || '';
-        const cnic = document.getElementById('cnic')?.value?.trim();
+        const guardianPhone = document.getElementById('father-phone')?.value?.trim()
+            || document.getElementById('whatsapp')?.value?.trim() || '';
+        const cnic = document.getElementById('cnic')?.value?.trim() || '';
+        const address = document.getElementById('address')?.value?.trim() || '';
+        const qualification = document.getElementById('qualification')?.value || '';
         const course = document.getElementById('course')?.value || '';
-        const learningMode = form.querySelector("input[name='learningMode']:checked");
-        const batch = form.querySelector("input[name='batch']:checked");
+        const learningMode = form.querySelector("input[name='learningMode']:checked")?.value || '';
+        const batch = form.querySelector("input[name='batch']:checked")?.value || '';
         const agreement = document.getElementById('agreement')?.checked || false;
 
         // ---- Validate mandatory fields ----
@@ -152,12 +162,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // ---- Insert into the Supabase 'students' table ----
         const studentData = {
             full_name: fullName,
+            father_name: fatherName,
+            dob: dob,
+            gender: gender,
             email: email,
             phone_number: phone,
+            guardian_phone: guardianPhone,
             cnic_number: cnic,
+            address: address,
+            qualification: qualification,
             course_selected: course
         };
-
         try {
             const { data, error } = await supabase
                 .from('students')
