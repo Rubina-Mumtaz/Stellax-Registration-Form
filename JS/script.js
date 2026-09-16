@@ -1,202 +1,177 @@
-// 1. Supabase Initialization
-const SUPABASE_URL = 'https://cqquvlkxoqduxtvmcjzc.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_JoPIcMNiUVfI3ME_BCCvlg_mFxhD5BS';
+// ==================================================
+// Stellax Academy — Registration Form Logic
+// Handles validation + Supabase insertion for the
+// student registration form on index.html.
+// Loads with `defer` AFTER supaBase/supabase.js,
+// so window.supabaseClient is already initialized.
+// ==================================================
 
-// CDN script load check
-const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registration-form');
+    const status = document.getElementById('form-status');
 
-document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("registration-form");
-    const status = document.getElementById("form-status");
+    // Nothing to do if the form isn't on this page.
+    if (!form) return;
 
-    // Helper: Error Message Display
+    // ------------------------------------------------
+    // Error display helpers
+    // ------------------------------------------------
+
+    // Shows/clears an error message under a field and
+    // toggles the .has-error class on its .field wrapper.
     const setError = (fieldId, message) => {
         const field = document.getElementById(fieldId);
         const messageElement = document.getElementById(`${fieldId}-error`);
-        const wrapper = field?.closest(".field") || document.querySelector(`#${fieldId}-group`)?.closest(".field");
+        const wrapper = field?.closest('.field') || document.querySelector(`#${fieldId}-group`)?.closest('.field');
 
         if (messageElement) messageElement.textContent = message;
-        if (wrapper) wrapper.classList.toggle("has-error", Boolean(message));
-        if (field) field.setAttribute("aria-invalid", String(Boolean(message)));
+        if (wrapper) wrapper.classList.toggle('has-error', Boolean(message));
+        if (field) {
+            if (message) {
+                field.setAttribute('aria-invalid', 'true');
+            } else {
+                field.removeAttribute('aria-invalid');
+            }
+        }
         return Boolean(message);
     };
 
-    // Clear Error on User Input
-    const clearErrorOnInput = (event) => {
-        const target = event.target;
-        const errorId = target.name === "learningMode" ? "learning-mode" : target.name === "batch" ? "batch" : target.id;
-        setError(errorId, "");
-        if (status) {
-            status.classList.remove("is-visible");
-            status.style.color = "";
+    // ------------------------------------------------
+    // Status message helpers
+    // (Reuses existing CSS classes: .form-status and .is-visible,
+    //  so no stylesheet changes are needed.)
+    // ------------------------------------------------
+
+    let statusTimer = null;
+
+    const showStatus = (message, type) => {
+        if (!status) return;
+
+        status.textContent = message;
+        status.classList.add('is-visible');
+        status.style.color = type === 'error' ? '#d9534f' : '#2e7d32';
+
+        // Clear any pending auto-dismiss so rapid resubmits don't race.
+        if (statusTimer) {
+            clearTimeout(statusTimer);
+            statusTimer = null;
+        }
+
+        // Errors persist so the user can read/fix them;
+        // success messages auto-dismiss after 6 seconds.
+        if (type === 'success') {
+            statusTimer = setTimeout(() => {
+                if (status) {
+                    status.classList.remove('is-visible');
+                    status.style.color = '';
+                }
+                statusTimer = null;
+            }, 6000);
         }
     };
 
-    if (form) {
-        form.addEventListener("input", clearErrorOnInput);
-        form.addEventListener("change", clearErrorOnInput);
+    const clearStatus = () => {
+        if (statusTimer) {
+            clearTimeout(statusTimer);
+            statusTimer = null;
+        }
+        if (status) {
+            status.classList.remove('is-visible');
+            status.style.color = '';
+        }
+    };
 
-        // 2. Form Submit Event Handler
-        form.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            
-            if (status) {
-                status.classList.remove("is-visible");
-                status.style.color = "";
+    // Clear a field's error as soon as the user edits it again.
+    const clearErrorOnInput = (event) => {
+        const target = event.target;
+        const errorId = target.name === 'learningMode' ? 'learning-mode' : target.name === 'batch' ? 'batch' : target.id;
+        if (errorId) setError(errorId, '');
+
+        // Also hide any submission status message while the user corrects things.
+        if (status?.classList.contains('is-visible')) {
+            clearStatus();
+        }
+    };
+
+    form.addEventListener('input', clearErrorOnInput);
+    form.addEventListener('change', clearErrorOnInput);
+
+    // ------------------------------------------------
+    // Validation patterns
+    // ------------------------------------------------
+    const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const PHONE_PATTERN = /^\d{7,15}$/;
+
+    // ------------------------------------------------
+    // Submit handler
+    // ------------------------------------------------
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        clearStatus();
+
+        // ---- Safely capture values (optional chaining prevents
+        //      "Cannot read properties of null" errors) ----
+        const fullName = document.getElementById('full-name')?.value?.trim() || '';
+        const email = document.getElementById('email')?.value?.trim() || '';
+        const phone = document.getElementById('phone')?.value?.trim() || '';
+        const cnic = document.getElementById('cnic')?.value?.trim() || '';
+        const course = document.getElementById('course')?.value || '';
+        const learningMode = form.querySelector("input[name='learningMode']:checked");
+        const batch = form.querySelector("input[name='batch']:checked");
+        const agreement = document.getElementById('agreement')?.checked || false;
+
+        // ---- Validate mandatory fields ----
+        // Full Name, Email, Phone, Course, Agreement,
+        // plus the learning-mode / batch radio groups.
+        let hasErrors = false;
+
+        hasErrors = setError('full-name', fullName ? '' : 'Please enter your full name.') || hasErrors;
+        hasErrors = setError('email', !email ? 'Please enter your email address.' : !EMAIL_PATTERN.test(email) ? 'Please enter a valid email address.' : '') || hasErrors;
+        hasErrors = setError('phone', !phone ? 'Please enter your phone number.' : !PHONE_PATTERN.test(phone.replace(/[\s().+-]/g, '')) ? 'Please enter a valid phone number.' : '') || hasErrors;
+        hasErrors = setError('course', course ? '' : 'Please select a course.') || hasErrors;
+        hasErrors = setError('learning-mode', learningMode ? '' : 'Please choose a learning preference.') || hasErrors;
+        hasErrors = setError('batch', batch ? '' : 'Please choose a batch preference.') || hasErrors;
+        hasErrors = setError('agreement', agreement ? '' : 'Please confirm that your information is correct.') || hasErrors;
+
+        if (hasErrors) {
+            form.querySelector("[aria-invalid='true']")?.focus();
+            showStatus('Please fix the highlighted fields and try again.', 'error');
+            return;
+        }
+
+        // ---- Supabase client availability check ----
+        const supabase = window.supabaseClient;
+        if (!supabase) {
+            showStatus('Error: Database connection not loaded. Please refresh the page.', 'error');
+            return;
+        }
+
+        // ---- Insert into the Supabase 'students' table ----
+        const studentData = {
+            full_name: fullName,
+            email: email,
+            phone_number: phone,
+            cnic_number: cnic ? cnic : 'N/A',
+            course_selected: course
+        };
+
+        try {
+            const { data, error } = await supabase
+                .from('students')
+                .insert([studentData]);
+
+            if (error) {
+                console.error('Database Error:', error);
+                showStatus('Registration Failed: ' + error.message, 'error');
+            } else {
+                form.reset();
+                showStatus('Your application has been submitted successfully! Data saved to Supabase.', 'success');
+                status?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
-
-            // Safe Field Value Retrievals
-            const fullName = document.getElementById("full-name")?.value.trim() || "";
-            const email = document.getElementById("email")?.value.trim() || "";
-            const phone = document.getElementById("phone")?.value.trim() || "";
-            const cnic = document.getElementById("cnic")?.value.trim() || "";
-            const course = document.getElementById("course")?.value || "";
-            const learningMode = form.querySelector("input[name='learningMode']:checked");
-            const batch = form.querySelector("input[name='batch']:checked");
-            const agreement = document.getElementById("agreement")?.checked || false;
-
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-            const phoneDigits = phone.replace(/[\s().+-]/g, "");
-            let hasErrors = false;
-
-            // Form Validations
-            hasErrors = setError("full-name", fullName ? "" : "Please enter your full name.") || hasErrors;
-            hasErrors = setError("email", !email ? "Please enter your email address." : !emailPattern.test(email) ? "Please enter a valid email address." : "") || hasErrors;
-            hasErrors = setError("phone", !phone ? "Please enter your phone number." : !/^\d{7,15}$/.test(phoneDigits) ? "Please enter a valid phone number." : "") || hasErrors;
-            hasErrors = setError("course", course ? "" : "Please select a course.") || hasErrors;
-            hasErrors = setError("learning-mode", learningMode ? "" : "Please choose a learning preference.") || hasErrors;
-            hasErrors = setError("batch", batch ? "" : "Please choose a batch preference.") || hasErrors;
-            hasErrors = setError("agreement", agreement ? "" : "Please confirm that your information is correct.") || hasErrors;
-
-            // Stop if form validation fails
-            if (hasErrors) {
-                const firstInvalid = form.querySelector("[aria-invalid='true']");
-                firstInvalid?.focus();
-                return;
-            }
-
-            // Status message during submission
-            if (status) {
-                status.textContent = "Submitting your application to Stellax Academy...";
-                status.classList.add("is-visible");
-            }
-
-            if (!supabaseClient) {
-                if (status) {
-                    status.style.color = "#d9534f";
-                    status.textContent = "Error: Supabase library not loaded. Please check HTML CDN script.";
-                }
-                return;
-            }
-
-            // Data mapping for Supabase Table
-            const studentData = {
-                full_name: fullName,
-                email: email,
-                phone_number: phone,
-                cnic_number: cnic ? cnic : 'N/A',
-                course_selected: course
-            };
-
-            // 3. Supabase Database Insertion
-            try {
-                const { data, error } = await supabaseClient
-                    .from('students')
-                    .insert([studentData]);
-
-                if (error) {
-                    console.error('Database Error:', error);
-                    if (status) {
-                        status.style.color = "#d9534f";
-                        status.textContent = "Registration Failed: " + error.message;
-                    }
-                } else {
-                    if (status) {
-                        status.style.color = "#2e7d32";
-                        status.textContent = "Your application form has been completed successfully! Record saved to database.";
-                        status.scrollIntoView({ behavior: "smooth", block: "nearest" });
-                    }
-                    form.reset();
-                }
-            } catch (err) {
-                console.error('Unexpected Error:', err);
-                if (status) {
-                    status.style.color = "#d9534f";
-                    status.textContent = "An unexpected error occurred. Please try again.";
-                }
-            }
-        });
-    }
+        } catch (err) {
+            console.error('Unexpected Error:', err);
+            showStatus('An unexpected error occurred. Please try again.', 'error');
+        }
+    });
 });
-
-
-
-
-
-
-
-
-
-
-// document.addEventListener("DOMContentLoaded", () => {
-// 	const form = document.getElementById("registration-form");
-// 	const status = document.getElementById("form-status");
-
-// 	const setError = (fieldId, message) => {
-// 		const field = document.getElementById(fieldId);
-// 		const messageElement = document.getElementById(`${fieldId}-error`);
-// 		const wrapper = field?.closest(".field") || document.querySelector(`#${fieldId}-group`)?.closest(".field");
-
-// 		if (messageElement) messageElement.textContent = message;
-// 		if (wrapper) wrapper.classList.toggle("has-error", Boolean(message));
-// 		if (field) field.setAttribute("aria-invalid", String(Boolean(message)));
-// 		return Boolean(message);
-// 	};
-
-// 	const clearErrorOnInput = (event) => {
-// 		const target = event.target;
-// 		const errorId = target.name === "learningMode" ? "learning-mode" : target.name === "batch" ? "batch" : target.id;
-// 		setError(errorId, "");
-// 		if (status) status.classList.remove("is-visible");
-// 	};
-
-// 	form.addEventListener("input", clearErrorOnInput);
-// 	form.addEventListener("change", clearErrorOnInput);
-
-// 	form.addEventListener("submit", (event) => {
-// 		event.preventDefault();
-// 		if (status) status.classList.remove("is-visible");
-
-// 		const fullName = document.getElementById("full-name").value.trim();
-// 		const email = document.getElementById("email").value.trim();
-// 		const phone = document.getElementById("phone").value.trim();
-// 		const course = document.getElementById("course").value;
-// 		const learningMode = form.querySelector("input[name='learningMode']:checked");
-// 		const batch = form.querySelector("input[name='batch']:checked");
-// 		const agreement = document.getElementById("agreement").checked;
-// 		const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-// 		const phoneDigits = phone.replace(/[\s().+-]/g, "");
-// 		let hasErrors = false;
-
-// 		hasErrors = setError("full-name", fullName ? "" : "Please enter your full name.") || hasErrors;
-// 		hasErrors = setError("email", !email ? "Please enter your email address." : !emailPattern.test(email) ? "Please enter a valid email address." : "") || hasErrors;
-// 		hasErrors = setError("phone", !phone ? "Please enter your phone number." : !/^\d{7,15}$/.test(phoneDigits) ? "Please enter a valid phone number." : "") || hasErrors;
-// 		hasErrors = setError("course", course ? "" : "Please select a course.") || hasErrors;
-// 		hasErrors = setError("learning-mode", learningMode ? "" : "Please choose a learning preference.") || hasErrors;
-// 		hasErrors = setError("batch", batch ? "" : "Please choose a batch preference.") || hasErrors;
-// 		hasErrors = setError("agreement", agreement ? "" : "Please confirm that your information is correct.") || hasErrors;
-
-// 		if (hasErrors) {
-// 			const firstInvalid = form.querySelector("[aria-invalid='true']");
-// 			firstInvalid?.focus();
-// 			return;
-// 		}
-
-// 		if (status) {
-// 			status.textContent = "Your application form has been completed successfully. Firebase will be connected in the next step to securely save your application.";
-// 			status.classList.add("is-visible");
-// 			status.scrollIntoView({ behavior: "smooth", block: "nearest" });
-// 		}
-// 	});
-// });
-

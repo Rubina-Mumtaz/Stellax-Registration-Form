@@ -14,9 +14,15 @@
 
 <!-- Apni Main CSS File -->
 <link rel="stylesheet" href="css/style.css">
-<script src="JS/script.js" defer></script>
 
+<!-- 1. Supabase CDN Library (must load first) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
+<script src="supaBase/supabase.js"></script>
+
+<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
+<script src="JS/script.js" defer></script>
 </head>
 <body>
 	<div class="page-shell">
@@ -77,7 +83,7 @@
 								<p class="error-message" id="email-error" role="alert"></p>
 							</div>
 							<div class="field field-required">
-								<label for="phone">Phone Number <span aria-hidden="true">*</span></label>
+								<label for="phone">Father's Phone Number <span aria-hidden="true">*</span></label>
 								<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" required>
 								<p class="error-message" id="phone-error" role="alert"></p>
 							</div>
@@ -205,10 +211,5 @@
 		<footer class="site-footer">&copy; Stellax Academy. All Rights Reserved.</footer>
 	</div>
 
-	<!-- 1. Supabase Library (CDN) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- 2. Aapki JS File -->
-<script src="supabase/supabase.js"></script>
 </body>
 </html>
