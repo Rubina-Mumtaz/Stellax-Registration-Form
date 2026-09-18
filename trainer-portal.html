@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Stellax Academy trainer dashboard">
+	<title>Trainer Dashboard | Stellax Academy</title>
+	<link rel="stylesheet" href="CSS/style.css">
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="supaBase/supabase.js"></script>
+</head>
+<body>
+	<div class="trainer-page">
+		<header class="trainer-header">
+			<div class="trainer-container trainer-header__inner">
+				<a class="trainer-brand" href="index.html" aria-label="Stellax Academy home">
+					<span class="trainer-brand__mark" aria-hidden="true">S</span>
+					<span class="trainer-brand__name">Stellax Academy</span>
+				</a>
+				<div class="trainer-header__title">
+					<p class="trainer-eyebrow">Faculty workspace</p>
+					<h1>Trainer Dashboard</h1>
+				</div>
+				<div class="trainer-header__account">
+					<div class="trainer-profile-placeholder" aria-label="Trainer profile placeholder">
+						<span class="trainer-profile-placeholder__avatar" aria-hidden="true">TR</span>
+						<span>
+							<strong id="trainer-name">Trainer Name</strong>
+							<small id="trainer-email">trainer@stellaxacademy.com</small>
+						</span>
+					</div>
+					<button id="logout-button" class="trainer-button trainer-button--outline" type="button">Logout</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="trainer-main">
+			<section id="login-section" class="trainer-login trainer-container" aria-labelledby="login-title">
+				<div class="trainer-login__intro">
+					<p class="trainer-eyebrow">Secure access</p>
+					<h2 id="login-title">Trainer Portal Login</h2>
+					<p>Sign in to manage your classes, review your student roster, and record attendance.</p>
+				</div>
+
+				<form id="trainer-login-form" class="trainer-login__form" novalidate>
+					<div class="trainer-form-field">
+						<label for="trainer-login-email">Email</label>
+						<input id="trainer-login-email" name="email" type="email" placeholder="trainer@stellaxacademy.com" autocomplete="username" required>
+					</div>
+					<div class="trainer-form-field">
+						<label for="trainer-login-password">Password</label>
+						<input id="trainer-login-password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+					</div>
+					<p id="auth-error" class="trainer-status trainer-status--error" role="alert" aria-live="polite" hidden></p>
+					<button class="trainer-button trainer-button--primary" type="submit">Login to Dashboard</button>
+				</form>
+			</section>
+
+			<section id="dashboard-section" class="trainer-dashboard trainer-container" aria-labelledby="dashboard-title" hidden style="display: none;">
+				<div class="trainer-dashboard__heading">
+					<div>
+						<p class="trainer-eyebrow">Today at a glance</p>
+						<h2 id="dashboard-title">Attendance Workspace</h2>
+					</div>
+					<p id="dashboard-date" class="trainer-dashboard__date">Current session</p>
+				</div>
+
+				<section class="trainer-filters" aria-labelledby="filter-title">
+					<div>
+						<p class="trainer-eyebrow">Roster view</p>
+						<h3 id="filter-title">Filter Students</h3>
+					</div>
+					<div class="trainer-filter-controls">
+						<div class="trainer-form-field">
+							<label for="course-filter">Course</label>
+							<select id="course-filter" name="course">
+								<option value="all">All Courses</option>
+								<option value="flutter">Flutter</option>
+								<option value="web-development">Web Dev</option>
+								<option value="graphic-design">Graphic Design</option>
+							</select>
+						</div>
+						<div class="trainer-form-field">
+							<label for="batch-filter">Batch</label>
+							<select id="batch-filter" name="batch">
+								<option value="Batch-5">Batch-5</option>
+								<option value="Batch-4">Batch-4</option>
+								<option value="Batch-3">Batch-3</option>
+							</select>
+						</div>
+					</div>
+				</section>
+
+				<section class="trainer-stats" aria-label="Attendance summary">
+					<article class="trainer-stat-card">
+						<span class="trainer-stat-card__label">Total Students</span>
+						<strong id="total-students" class="trainer-stat-card__value">0</strong>
+					</article>
+					<article class="trainer-stat-card trainer-stat-card--success">
+						<span class="trainer-stat-card__label">Present Today</span>
+						<strong id="present-today" class="trainer-stat-card__value">0</strong>
+					</article>
+					<article class="trainer-stat-card trainer-stat-card--pending">
+						<span class="trainer-stat-card__label">Pending Tasks</span>
+						<strong id="absent-today" class="trainer-stat-card__value">0</strong>
+					</article>
+				</section>
+
+				<section class="trainer-roster" aria-labelledby="roster-title">
+					<div class="trainer-roster__heading">
+						<div>
+							<p class="trainer-eyebrow">Class management</p>
+							<h3 id="roster-title">Student Roster</h3>
+						</div>
+						<button id="save-attendance-button" class="trainer-button trainer-button--primary" type="button">Save Attendance</button>
+					</div>
+
+					<div class="trainer-table-wrapper">
+						<table class="trainer-table">
+							<caption class="visually-hidden">Student roster and attendance status</caption>
+							<thead>
+								<tr>
+									<th scope="col">Roll Number</th>
+									<th scope="col">Student Name</th>
+									<th scope="col">Course</th>
+									<th scope="col">Attendance Status</th>
+									<th scope="col">Actions</th>
+								</tr>
+							</thead>
+							<tbody id="student-table-body">
+								<tr class="roster-row" data-course="flutter" data-batch="Batch-5">
+									<td data-label="Roll Number">FL-2001</td>
+									<td data-label="Student Name">Student Name</td>
+									<td data-label="Course">Flutter</td>
+									<td data-label="Attendance Status">
+										<fieldset class="attendance-control">
+											<legend class="visually-hidden">Attendance for Student Name</legend>
+											<label><input type="radio" name="attendance-FL-2001" value="present"> Present</label>
+											<label><input type="radio" name="attendance-FL-2001" value="absent"> Absent</label>
+										</fieldset>
+									</td>
+									<td data-label="Actions"><button class="table-action" type="button" data-action="view" data-roll-number="FL-2001">View</button></td>
+								</tr>
+								<tr class="roster-row" data-course="web-development" data-batch="Batch-5">
+									<td data-label="Roll Number">WD-1001</td>
+									<td data-label="Student Name">Student Name</td>
+									<td data-label="Course">Web Dev</td>
+									<td data-label="Attendance Status">
+										<fieldset class="attendance-control">
+											<legend class="visually-hidden">Attendance for Student Name</legend>
+											<label><input type="radio" name="attendance-WD-1001" value="present"> Present</label>
+											<label><input type="radio" name="attendance-WD-1001" value="absent"> Absent</label>
+										</fieldset>
+									</td>
+									<td data-label="Actions"><button class="table-action" type="button" data-action="view" data-roll-number="WD-1001">View</button></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<p id="roster-status" class="trainer-status" role="status" aria-live="polite" hidden></p>
+				</section>
+			</section>
+		</main>
+
+		<footer class="trainer-footer">
+			<div class="trainer-container">
+				<p>&copy; 2026 Stellax Academy. All rights reserved.</p>
+			</div>
+		</footer>
+	</div>
+
+	<script src="JS/trainer-portal.js" defer></script>
+</body>
+</html>

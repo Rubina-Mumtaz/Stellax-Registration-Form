@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Stellax Academy student portal">
+    <title>Student Portal | Stellax Academy</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supaBase/supabase.js"></script>
+</head>
+<body>
+    <div class="portal-page">
+        <header class="portal-header">
+            <div class="portal-container portal-header__inner">
+                <a class="portal-brand" href="index.html" aria-label="Stellax Academy home">
+                    <span class="portal-brand__mark" aria-hidden="true">S</span>
+                    <span class="portal-brand__name">Stellax Academy</span>
+                </a>
+                <a class="portal-header__support" href="mailto:support@stellaxacademy.com">Help / Support</a>
+            </div>
+        </header>
+
+        <main class="portal-main">
+            <section id="login-section" class="login-section portal-container" aria-labelledby="login-title">
+                <div class="login-section__intro">
+                    <p class="portal-eyebrow">Student access</p>
+                    <h1 id="login-title">Student Portal Login</h1>
+                    <p>Sign in to view your registration details, course information, and digital student ID.</p>
+                </div>
+
+                <form id="student-login-form" class="login-form" novalidate>
+                    <div class="form-field">
+                        <label for="roll-number">Roll Number</label>
+                        <input
+                            id="roll-number"
+                            name="rollNumber"
+                            type="text"
+                            placeholder="e.g., FL-2001"
+                            autocomplete="username"
+                            pattern="[A-Za-z]{2}-[0-9]{4}"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-field">
+                        <label for="cnic-number">CNIC Number</label>
+                        <input
+                            id="cnic-number"
+                            name="cnicNumber"
+                            type="text"
+                            placeholder="Enter 13-digit CNIC"
+                            inputmode="numeric"
+                            autocomplete="current-password"
+                            minlength="13"
+                            maxlength="13"
+                            pattern="[0-9]{13}"
+                            required
+                        >
+                    </div>
+
+                    <p id="login-status" class="status-message" role="alert" aria-live="polite" hidden></p>
+                    <button class="portal-button portal-button--primary" type="submit">Login to Dashboard</button>
+                </form>
+            </section>
+
+            <section id="dashboard-section" class="dashboard-section portal-container" aria-labelledby="dashboard-title" hidden style="display: none;">
+                <div class="dashboard-heading">
+                    <div>
+                        <p class="portal-eyebrow">Student dashboard</p>
+                        <h1 id="dashboard-title">Welcome back, <span id="student-name-heading">Student</span></h1>
+                    </div>
+                    <button id="logout-button" class="portal-button portal-button--secondary" type="button">Logout</button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <article class="portal-card profile-card">
+                        <div class="portal-card__heading">
+                            <p class="portal-eyebrow">Your information</p>
+                            <h2>Student Profile</h2>
+                        </div>
+                        <dl class="profile-details">
+                            <div><dt>Student Name</dt><dd id="student-name">Not available</dd></div>
+                            <div><dt>Father Name</dt><dd id="father-name">Not available</dd></div>
+                            <div><dt>Roll Number</dt><dd id="profile-roll-number">Not available</dd></div>
+                            <div><dt>CNIC</dt><dd id="profile-cnic">Not available</dd></div>
+                            <div><dt>Selected Course</dt><dd id="selected-course">Not available</dd></div>
+                            <div><dt>Batch Name</dt><dd id="batch-name">Batch-5</dd></div>
+                        </dl>
+                    </article>
+
+                    <article class="portal-card id-card-panel">
+                        <div class="portal-card__heading">
+                            <p class="portal-eyebrow">Carry your credentials</p>
+                            <h2>Digital Student ID</h2>
+                        </div>
+                        <div id="student-id-card" class="student-id-card" aria-label="Digital student ID card">
+                            <div class="student-id-card__topline">
+                                <span class="student-id-card__mark" aria-hidden="true">S</span>
+                                <span>Stellax Academy</span>
+                            </div>
+                            <div class="student-id-card__body">
+                                <div class="student-id-card__avatar" aria-hidden="true">SA</div>
+                                <div>
+                                    <p class="student-id-card__label">Student</p>
+                                    <h3 id="id-card-name">Student Name</h3>
+                                    <p>Roll No: <strong id="id-card-roll-number">FL-2001</strong></p>
+                                </div>
+                            </div>
+                            <p class="student-id-card__footer">Valid student identification</p>
+                        </div>
+                        <button id="download-id-card" class="portal-button portal-button--secondary" type="button">Download ID Card</button>
+                    </article>
+
+                    <article class="portal-card course-card">
+                        <div class="portal-card__heading">
+                            <p class="portal-eyebrow">Enrollment overview</p>
+                            <h2>Course Details</h2>
+                        </div>
+                        <dl class="course-details">
+                            <div><dt>Learning Mode</dt><dd id="learning-mode">Online / Physical</dd></div>
+                            <div><dt>Campus / Class Schedule</dt><dd id="class-schedule">Schedule pending</dd></div>
+                            <div><dt>Registration Status</dt><dd id="registration-status" class="status-badge">Approved / Pending</dd></div>
+                        </dl>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="portal-footer">
+            <div class="portal-container">
+                <p>&copy; 2026 Stellax Academy. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="JS/student-portal.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Stellax Academy administrator portal for managing students, batches, and trainers.">
+	<title>Admin Portal | Stellax Academy</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="CSS/style.css">
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="supaBase/supabase.js"></script>
+	<script src="JS/admin-portal.js" defer></script>
+</head>
+<body>
+	<div class="page-shell admin-portal">
+		<header class="site-header admin-header">
+			<div class="header-inner">
+				<a class="brand" href="index.html" aria-label="Stellax Academy home">
+					<img src="Images/stellax logo White.png" alt="Stellax Academy logo">
+				</a>
+				<div class="header-copy">
+					<p class="eyebrow">Admin Dashboard</p>
+					<h1>Stellax Academy</h1>
+					<p>Manage students, batches, and academy operations.</p>
+				</div>
+				<div class="header-actions">
+					<span class="admin-profile" aria-label="Signed in as administrator">
+						<span class="profile-avatar" aria-hidden="true">A</span>
+						<span>Administrator</span>
+					</span>
+					<button class="button button-outline" id="logout-button" type="button">Logout</button>
+				</div>
+			</div>
+		</header>
+
+		<main class="main-content">
+			<section class="portal-section login-section" id="login-section" aria-labelledby="login-title">
+				<div class="section-heading">
+					<p class="section-kicker">Secure access</p>
+					<h2 id="login-title">Admin Portal Access</h2>
+					<p>Sign in with your administrator credentials to continue.</p>
+				</div>
+				<div class="portal-card login-card">
+					<div class="notification notification-error" id="login-error" role="alert" aria-live="polite" hidden></div>
+					<form id="admin-login-form" novalidate>
+						<div class="field">
+							<label for="admin-email">Admin Email</label>
+							<input type="email" id="admin-email" name="adminEmail" autocomplete="username" placeholder="admin@stellaxacademy.com" required>
+						</div>
+						<div class="field">
+							<label for="admin-password">Password</label>
+							<input type="password" id="admin-password" name="adminPassword" autocomplete="current-password" placeholder="Enter your password" required>
+						</div>
+						<button class="button button-primary button-full" type="submit">Login as Administrator</button>
+					</form>
+				</div>
+			</section>
+
+			<section class="portal-section dashboard-section" id="dashboard-section" aria-labelledby="dashboard-title" hidden>
+				<div class="section-heading dashboard-heading">
+					<div>
+						<p class="section-kicker">Overview</p>
+						<h2 id="dashboard-title">Student Management</h2>
+						<p>Review applications and keep academy records up to date.</p>
+					</div>
+					<time class="last-updated" id="last-updated" datetime="">Last updated today</time>
+				</div>
+
+				<div class="analytics-grid" aria-label="Analytics summary">
+					<article class="summary-card"><span class="summary-label">Total Registered Students</span><strong id="total-students">0</strong></article>
+					<article class="summary-card"><span class="summary-label">Pending Approvals</span><strong id="pending-approvals">0</strong></article>
+					<article class="summary-card"><span class="summary-label">Approved / Active Students</span><strong id="active-students">0</strong></article>
+					<article class="summary-card"><span class="summary-label">Total Active Batches</span><strong id="active-batches">Batch-5</strong></article>
+				</div>
+
+				<div class="portal-card management-card">
+					<div class="filter-toolbar" aria-label="Student filters">
+						<div class="field search-field">
+							<label for="student-search">Search students</label>
+							<input type="search" id="student-search" name="studentSearch" placeholder="Search by Name, Roll Number, or CNIC">
+						</div>
+						<div class="field">
+							<label for="course-filter">Course</label>
+							<select id="course-filter" name="courseFilter">
+								<option value="">All Courses</option>
+								<option value="Digital Marketing">Digital Marketing</option>
+								<option value="Web &amp; App Development">Web &amp; App Development</option>
+								<option value="Graphic Designing">Graphic Designing</option>
+								<option value="Video Editing">Video Editing</option>
+							</select>
+						</div>
+						<div class="field">
+							<label for="batch-filter">Batch</label>
+							<select id="batch-filter" name="batchFilter">
+								<option value="">All Batches</option>
+								<option value="Batch-5">Batch-5</option>
+								<option value="Batch-4">Batch-4</option>
+								<option value="Batch-3">Batch-3</option>
+							</select>
+						</div>
+						<div class="field">
+							<label for="status-filter">Status</label>
+							<select id="status-filter" name="statusFilter">
+								<option value="">All Statuses</option>
+								<option value="Pending">Pending</option>
+								<option value="Approved">Approved</option>
+								<option value="Rejected">Rejected</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="table-wrapper">
+						<table class="student-table">
+							<caption class="sr-only">Registered students and available management actions</caption>
+							<thead>
+								<tr><th scope="col">Roll Number</th><th scope="col">Full Name</th><th scope="col">Father Name</th><th scope="col">CNIC</th><th scope="col">Phone</th><th scope="col">Course</th><th scope="col">Batch</th><th scope="col">Status</th><th scope="col">Actions</th></tr>
+							</thead>
+							<tbody id="student-table-body">
+								<tr class="empty-state"><td colspan="9">No student records available.</td></tr>
+							</tbody>
+						</table>
+						<template id="student-row-template">
+							<tr>
+								<td data-field="rollNumber"></td>
+								<td data-field="fullName"></td>
+								<td data-field="fatherName"></td>
+								<td data-field="cnic"></td>
+								<td data-field="phone"></td>
+								<td data-field="course"></td>
+								<td data-field="batch"></td>
+								<td><span class="status-badge" data-field="status"></span></td>
+								<td class="table-actions">
+									<button class="button button-small button-success" type="button" data-action="approve">Approve</button>
+									<button class="button button-small button-danger" type="button" data-action="reject">Reject</button>
+									<button class="button button-small button-quiet" type="button" data-action="delete">Delete</button>
+								</td>
+							</tr>
+						</template>
+					</div>
+				</div>
+
+				<section class="quick-management" aria-labelledby="trainer-title">
+					<div class="section-heading"><p class="section-kicker">Quick management</p><h3 id="trainer-title">Add a New Trainer</h3><p>Create a trainer profile and assign their first course.</p></div>
+					<div class="portal-card">
+						<form id="trainer-form" class="trainer-form">
+							<div class="field"><label for="trainer-name">Name</label><input type="text" id="trainer-name" name="trainerName" autocomplete="name" required></div>
+							<div class="field"><label for="trainer-email">Email</label><input type="email" id="trainer-email" name="trainerEmail" autocomplete="email" required></div>
+							<div class="field"><label for="assigned-course">Assigned Course</label><select id="assigned-course" name="assignedCourse" required><option value="">Select a course</option><option value="Digital Marketing">Digital Marketing</option><option value="Web &amp; App Development">Web &amp; App Development</option><option value="Graphic Designing">Graphic Designing</option><option value="Video Editing">Video Editing</option></select></div>
+							<button class="button button-primary" type="submit">Add Trainer</button>
+						</form>
+					</div>
+				</section>
+			</section>
+		</main>
+
+		<footer class="site-footer"><p>&copy; 2026 Stellax Academy. Administrator access only.</p></footer>
+	</div>
+</body>
+</html>
