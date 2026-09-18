@@ -101,7 +101,37 @@ document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------------
     const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
     const PHONE_PATTERN = /^\d{7,15}$/;
-    const CNIC_PATTERN = /^(?:\d{5}-\d{7}-\d|\d{13})$/;
+    const CNIC_PATTERN = /^[0-9]{13}$/;
+
+    const getRequiredFieldLabel = (field) => {
+        const label = field.closest('.field')?.querySelector('.field-label, label')?.textContent.trim();
+        return label?.replace('*', '').trim() || field.name || field.id;
+    };
+
+    const validateRequiredFields = () => {
+        const missingFields = [];
+        const checkedRadioGroups = new Set();
+
+        form.querySelectorAll('input, select, textarea').forEach((field) => {
+            if (field.type === 'radio') {
+                if (checkedRadioGroups.has(field.name)) return;
+                checkedRadioGroups.add(field.name);
+
+                if (!form.querySelector(`input[name="${field.name}"]:checked`)) {
+                    missingFields.push(getRequiredFieldLabel(field));
+                }
+                return;
+            }
+
+            const isEmpty = field.type === 'checkbox'
+                ? !field.checked
+                : !field.value.trim();
+
+            if (isEmpty) missingFields.push(getRequiredFieldLabel(field));
+        });
+
+        return missingFields;
+    };
 
     // ------------------------------------------------
     // Submit handler
@@ -132,23 +162,40 @@ document.addEventListener('DOMContentLoaded', () => {
         const batch = form.querySelector("input[name='batch']:checked")?.value || '';
         const agreement = document.getElementById('agreement')?.checked || false;
 
-        // ---- Validate mandatory fields ----
-        // Full Name, Email, Phone, Course, Agreement,
-        // plus the learning-mode / batch radio groups.
+        // ---- Validate every required field before format checks ----
         let hasErrors = false;
+        const missingFields = validateRequiredFields();
+
+        missingFields.forEach((fieldLabel) => {
+            const field = [...form.querySelectorAll('[required]')]
+                .find((control) => getRequiredFieldLabel(control) === fieldLabel);
+            if (field) field.setAttribute('aria-invalid', 'true');
+        });
+
+        hasErrors = missingFields.length > 0;
 
         hasErrors = setError('full-name', fullName ? '' : 'Please enter your full name.') || hasErrors;
+        hasErrors = setError('guardian-name', fatherName ? '' : "Please enter your father's / guardian's name.") || hasErrors;
+        hasErrors = setError('date-of-birth', dob ? '' : 'Please enter your date of birth.') || hasErrors;
         hasErrors = setError('email', !email ? 'Please enter your email address.' : !EMAIL_PATTERN.test(email) ? 'Please enter a valid email address.' : '') || hasErrors;
         hasErrors = setError('phone', !phone ? 'Please enter your phone number.' : !PHONE_PATTERN.test(phone.replace(/[\s().+-]/g, '')) ? 'Please enter a valid phone number.' : '') || hasErrors;
-        hasErrors = setError('cnic', !cnic ? 'Please enter your CNIC / B-Form number.' : !CNIC_PATTERN.test(cnic) ? 'Please enter a valid CNIC / B-Form number.' : '') || hasErrors;
+        hasErrors = setError('whatsapp', !guardianPhone ? 'Please enter the student phone number.' : '') || hasErrors;
+        hasErrors = setError('cnic', !cnic ? 'Please enter your CNIC / B-Form number.' : !CNIC_PATTERN.test(cnic) ? 'CNIC / B-Form must contain exactly 13 digits.' : '') || hasErrors;
         hasErrors = setError('course', course ? '' : 'Please select a course.') || hasErrors;
         hasErrors = setError('learning-mode', learningMode ? '' : 'Please choose a learning preference.') || hasErrors;
         hasErrors = setError('batch', batch ? '' : 'Please choose a batch preference.') || hasErrors;
         hasErrors = setError('agreement', agreement ? '' : 'Please confirm that your information is correct.') || hasErrors;
 
+        if (phone && guardianPhone && phone.replace(/\D/g, '') === guardianPhone.replace(/\D/g, '')) {
+            hasErrors = setError('whatsapp', 'Student and father phone numbers must be different.') || hasErrors;
+        }
+
         if (hasErrors) {
             form.querySelector("[aria-invalid='true']")?.focus();
-            showStatus('Please fix the highlighted fields and try again.', 'error');
+            const missingMessage = missingFields.length
+                ? `Please complete: ${missingFields.join(', ')}.`
+                : 'Please fix the highlighted fields and try again.';
+            showStatus(missingMessage, 'error');
             return;
         }
 
@@ -158,6 +205,21 @@ document.addEventListener('DOMContentLoaded', () => {
             showStatus('Error: Database connection not loaded. Please refresh the page.', 'error');
             return;
         }
+
+        // ---- Generate a course-based roll number before insertion ----
+        const normalizedCourse = course.trim().toLowerCase();
+        const coursePrefixes = {
+            'graphic designing': 'GA-',
+            'digital marketing': 'DM-',
+            'web & app development': 'WD-',
+            'video editing': 'VE-',
+            canva: 'CN-',
+            freelancing: 'FL-'
+        };
+        const coursePrefix = coursePrefixes[normalizedCourse] || 'ST-';
+        const seriesStart = normalizedCourse === 'freelancing' ? 2000 : 1000;
+        const randomNumber = Math.floor(seriesStart + Math.random() * (10000 - seriesStart));
+        const rollNumber = `${coursePrefix}${randomNumber}`;
 
         // ---- Insert into the Supabase 'students' table ----
         const studentData = {
@@ -171,7 +233,10 @@ document.addEventListener('DOMContentLoaded', () => {
             cnic_number: cnic,
             address: address,
             qualification: qualification,
-            course_selected: course
+            course_selected: course,
+            roll_number: rollNumber,
+            learning_mode: learningMode,     // Added
+            batch_preference: batch          // Added
         };
         try {
             const { data, error } = await supabase

@@ -57,18 +57,18 @@
 							</div>
 							<div class="field">
 								<label for="guardian-name">Father's / Guardian's Name</label>
-								<input type="text" id="guardian-name" name="guardianName" autocomplete="name">
+								<input type="text" id="guardian-name" name="guardianName" autocomplete="name" required>
 							</div>
 							<div class="field">
 								<label for="date-of-birth">Date of Birth</label>
-								<input type="date" id="date-of-birth" name="dateOfBirth">
+								<input type="date" id="date-of-birth" name="dateOfBirth" required>
 							</div>
 							<div class="field">
 								<span class="field-label">Gender</span>
 								<div class="option-row">
-									<label class="choice"><input type="radio" name="gender" value="Male"> <span>Male</span></label>
-									<label class="choice"><input type="radio" name="gender" value="Female"> <span>Female</span></label>
-									<label class="choice"><input type="radio" name="gender" value="Prefer not to say"> <span>Prefer not to say</span></label>
+									<label class="choice"><input type="radio" name="gender" value="Male" required> <span>Male</span></label>
+									<label class="choice"><input type="radio" name="gender" value="Female" required> <span>Female</span></label>
+									<label class="choice"><input type="radio" name="gender" value="Prefer not to say" required> <span>Prefer not to say</span></label>
 								</div>
 							</div>
 						</div>
@@ -83,26 +83,27 @@
 								<p class="error-message" id="email-error" role="alert"></p>
 							</div>
 							<div class="field field-required">
-								<label for="phone">Father Number <span aria-hidden="true">*</span></label>
+								<label for="phone">Father's Phone Number <span aria-hidden="true">*</span></label>
 								<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" required>
 								<p class="error-message" id="phone-error" role="alert"></p>
 							</div>
 							<div class="field field-required">
 								<label for="cnic">CNIC / B-Form Number <span aria-hidden="true">*</span></label>
-								<input type="text" id="cnic" name="cnic" placeholder="42101-1234567-1" maxlength="15" required>
+								<input type="text" id="cnic" name="cnic" placeholder="4210112345671" maxlength="13" pattern="[0-9]{13}" inputmode="numeric" required>
 								<p class="error-message" id="cnic-error" role="alert"></p>
 							</div>
 							<div class="field">
-								<label for="whatsapp">Student Number</label>
-								<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel">
+								<label for="whatsapp">Student Phone Number <span aria-hidden="true">*</span></label>
+								<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel" required>
+								<p class="error-message" id="whatsapp-error" role="alert"></p>
 							</div>
 							<div class="field">
 								<label for="city">City</label>
-								<input type="text" id="city" name="city" autocomplete="address-level2">
+								<input type="text" id="city" name="city" autocomplete="address-level2" required>
 							</div>
 							<div class="field field-full">
 								<label for="address">Address</label>
-								<textarea id="address" name="address" rows="3" autocomplete="street-address"></textarea>
+								<textarea id="address" name="address" rows="3" autocomplete="street-address" required></textarea>
 							</div>
 						</div>
 					</fieldset>
@@ -131,17 +132,17 @@
 						<div class="field-grid two-columns">
 							<div class="field">
 								<label for="qualification">Highest Qualification</label>
-								<input type="text" id="qualification" name="qualification">
+								<input type="text" id="qualification" name="qualification" required>
 							</div>
 							<div class="field">
 								<label for="institute">Institute / School / College / University</label>
-								<input type="text" id="institute" name="institute">
+								<input type="text" id="institute" name="institute" required>
 							</div>
 							<div class="field">
 								<span class="field-label">Current Student?</span>
 								<div class="option-row">
-									<label class="choice"><input type="radio" name="currentStudent" value="Yes"> <span>Yes</span></label>
-									<label class="choice"><input type="radio" name="currentStudent" value="No"> <span>No</span></label>
+									<label class="choice"><input type="radio" name="currentStudent" value="Yes" required> <span>Yes</span></label>
+									<label class="choice"><input type="radio" name="currentStudent" value="No" required> <span>No</span></label>
 								</div>
 							</div>
 						</div>
@@ -152,9 +153,9 @@
 						<div class="field field-required">
 							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
 							<div class="preference-grid" id="learning-mode-group">
-								<label class="preference"><input type="radio" name="learningMode" value="Online"><span>Online</span></label>
-								<label class="preference"><input type="radio" name="learningMode" value="On Campus"><span>On Campus</span></label>
-								<label class="preference"><input type="radio" name="learningMode" value="Hybrid"><span>Hybrid</span></label>
+									<label class="preference"><input type="radio" name="learningMode" value="Online" required><span>Online</span></label>
+									<label class="preference"><input type="radio" name="learningMode" value="On Campus" required><span>On Campus</span></label>
+									<label class="preference"><input type="radio" name="learningMode" value="Hybrid" required><span>Hybrid</span></label>
 							</div>
 							<p class="error-message" id="learning-mode-error" role="alert"></p>
 						</div>
@@ -165,9 +166,9 @@
 						<div class="field field-required">
 							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
 							<div class="preference-grid" id="batch-group">
-								<label class="preference"><input type="radio" name="batch" value="Morning"><span>Morning</span></label>
-								<label class="preference"><input type="radio" name="batch" value="Afternoon"><span>Afternoon</span></label>
-								<label class="preference"><input type="radio" name="batch" value="Evening"><span>Evening</span></label>
+									<label class="preference"><input type="radio" name="batch" value="Morning" required><span>Morning</span></label>
+									<label class="preference"><input type="radio" name="batch" value="Afternoon" required><span>Afternoon</span></label>
+									<label class="preference"><input type="radio" name="batch" value="Evening" required><span>Evening</span></label>
 							</div>
 							<p class="error-message" id="batch-error" role="alert"></p>
 						</div>
@@ -178,11 +179,11 @@
 						<div class="field-grid">
 							<div class="field">
 								<label for="motivation">Why do you want to join Stellax Academy?</label>
-								<textarea id="motivation" name="motivation" rows="5"></textarea>
+								<textarea id="motivation" name="motivation" rows="5" required></textarea>
 							</div>
 							<div class="field">
 								<label for="referral">How did you hear about us?</label>
-								<select id="referral" name="referral">
+								<select id="referral" name="referral" required>
 									<option value="">Select an option</option>
 									<option>Facebook</option>
 									<option>Instagram</option>
