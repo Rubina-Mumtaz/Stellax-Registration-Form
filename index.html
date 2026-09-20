@@ -22,10 +22,11 @@
 	<!-- 1. Supabase CDN Library (must load first) -->
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js"></script>
 
 	<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
 	<script src="supaBase/supabase.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 	<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
 	<script src="JS/script.js" defer></script>
@@ -278,23 +279,20 @@
 					<div class="tab-panel-heading">
 						<p class="section-kicker">Student services</p>
 						<h2>Download ID Card</h2>
-						<p>Enter your approved Roll Number and CNIC to view and download your ID card.</p>
+						<p>Enter your CNIC to view and download your approved ID card.</p>
 					</div>
 					<form id="id-card-lookup-form" class="portal-lookup-form" novalidate>
-						<div class="field-grid two-columns">
-							<div class="field"><label for="id-card-roll-number-input">Roll Number</label><input
-									id="id-card-roll-number-input" type="text" placeholder="e.g., FL-2001" required>
-							</div>
+						<div class="field-grid">
 							<div class="field"><label for="id-card-cnic-input">CNIC Number</label><input
-									id="id-card-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC"
-									required></div>
+									id="id-card-cnic-input" type="text" inputmode="numeric"
+									placeholder="Enter CNIC Number (e.g., 42101-XXXXXXX-X)" required></div>
 						</div>
 						<button class="portal-panel-button" type="submit">Find ID Card</button>
 						<p class="portal-panel-message" id="id-card-lookup-message" role="status" aria-live="polite">
 						</p>
 					</form>
 					<div class="id-card-preview" id="id-card-preview" hidden>
-						<div class="id-card-wrapper" id="registration-id-card-preview">
+						<div class="id-card-wrapper" id="id-card-download-wrapper">
 							<article class="id-card id-card-front" aria-label="Student ID card front">
 								<header class="card-header">
 									<div class="brand-group">
@@ -308,7 +306,8 @@
 								</header>
 								<div class="id-card-front-body">
 									<div class="id-card-photo photo-container"><img id="preview-photo"
-											alt="Student profile photo" onerror="this.onerror=null; this.src='assets/default-avatar.png'" hidden><span
+											src="Images/Stellax-ID-Card-Logo.jpeg" alt="Student profile photo"
+											onerror="this.onerror=null; this.src='Images/Stellax-ID-Card-Logo.jpeg';" hidden><span
 											id="preview-photo-placeholder">PHOTO</span></div>
 									<dl class="id-card-details">
 										<div>
@@ -363,12 +362,10 @@
 										</div>
 									</div>
 								</div>
-								<footer class="id-card-footer">Emergency: Contact Academy Administration &bull; Stellax
-									Academy Campus</footer>
 							</article>
 						</div>
-						<button class="portal-panel-button" id="download-preview-pdf" type="button">Download
-							PDF</button>
+						<button class="portal-panel-button" id="download-preview-pdf" type="button" hidden>Download
+							ID Card</button>
 					</div>
 				</section>
 

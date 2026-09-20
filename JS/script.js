@@ -8,6 +8,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_AVATAR_URL = 'assets/default-avatar.png';
+    const DEFAULT_ID_CARD_IMAGE = 'Images/Stellax-ID-Card-Logo.jpeg';
     const form = document.getElementById('registration-form');
     const status = document.getElementById('form-status');
     const photoInput = document.getElementById('student-photo');
@@ -17,13 +18,15 @@ document.addEventListener('DOMContentLoaded', () => {
         || document.querySelector('.photo-container img');
     const idCardPhotoPlaceholder = document.getElementById('preview-photo-placeholder');
 
-    const setImageSource = (image, source) => {
+    const setImageSource = (image, source, fallback = DEFAULT_AVATAR_URL, useDefaultPhotoStyling = false) => {
         if (!image) return;
+        image.classList.toggle('is-default-photo', useDefaultPhotoStyling && !source);
         image.onerror = () => {
             image.onerror = null;
-            image.src = DEFAULT_AVATAR_URL;
+            image.classList.toggle('is-default-photo', useDefaultPhotoStyling);
+            image.src = fallback;
         };
-        image.src = source || DEFAULT_AVATAR_URL;
+        image.src = source || fallback;
     };
 
     const getCoursePrefix = (courseName) => {
@@ -125,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const supabaseClient = window.supabaseClient;
     const normalizeLookupValue = (value) => String(value || '').trim();
+    const normalizeCnic = (value) => normalizeLookupValue(value).replace(/\D/g, '');
+    const isValidCnic = (value) => /^(?:\d{13}|\d{5}-\d{7}-\d)$/.test(normalizeLookupValue(value));
     const getLookupStudent = async (rollNumber, cnicNumber) => {
         if (!supabaseClient) throw new Error('Database connection unavailable.');
         const { data, error } = await supabaseClient
@@ -132,6 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
             .select('*')
             .eq('roll_number', normalizeLookupValue(rollNumber).toUpperCase())
             .eq('cnic_number', normalizeLookupValue(cnicNumber))
+            .maybeSingle();
+        if (error) throw error;
+        return data;
+    };
+    const getStudentByCnic = async (cnicNumber) => {
+        if (!supabaseClient) throw new Error('Database connection unavailable.');
+        const { data, error } = await supabaseClient
+            .from('students')
+            .select('*')
+            .eq('cnic_number', normalizeCnic(cnicNumber))
             .maybeSingle();
         if (error) throw error;
         return data;
@@ -176,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const previewPhoto = document.getElementById('preview-photo');
         const photoPlaceholder = document.getElementById('preview-photo-placeholder');
         if (previewPhoto && photoPlaceholder) {
-            setImageSource(previewPhoto, student.photo_url);
+            setImageSource(previewPhoto, student.photo_url, DEFAULT_ID_CARD_IMAGE, true);
             previewPhoto.hidden = false;
             photoPlaceholder.hidden = true;
         }
@@ -205,13 +220,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    bindLookupForm('id-card-lookup-form', 'id-card-roll-number-input', 'id-card-cnic-input', 'id-card-lookup-message', (student, messageId) => {
-        if (String(student.status || '').toLowerCase() !== 'approved') {
-            showPanelMessage(messageId, 'Your ID card will be available after approval.');
+    const waitForImages = (container) => Promise.all([...container.querySelectorAll('img')].map((image) => {
+        if (image.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+            image.addEventListener('load', resolve, { once: true });
+            image.addEventListener('error', resolve, { once: true });
+        });
+    }));
+
+    document.getElementById('id-card-lookup-form')?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const cnicNumber = document.getElementById('id-card-cnic-input')?.value;
+        const downloadButton = document.getElementById('download-preview-pdf');
+        downloadButton?.setAttribute('hidden', '');
+        if (!isValidCnic(cnicNumber)) {
+            showPanelMessage('id-card-lookup-message', 'Enter a valid 13-digit CNIC number.');
             return;
         }
-        fillIdCardPreview(student);
-        showPanelMessage(messageId, 'ID card found. You can download the PDF below.', 'success');
+        showPanelMessage('id-card-lookup-message', 'Searching...', 'success');
+        try {
+            const student = await getStudentByCnic(cnicNumber);
+            if (!student) {
+                showPanelMessage('id-card-lookup-message', 'No student record found for this CNIC.');
+                return;
+            }
+            if (String(student.status || '').toLowerCase() !== 'approved') {
+                showPanelMessage('id-card-lookup-message', 'Your ID card will be available after approval.');
+                return;
+            }
+            fillIdCardPreview(student);
+            downloadButton?.removeAttribute('hidden');
+            showPanelMessage('id-card-lookup-message', 'ID card found. You can download it below.', 'success');
+        } catch (error) {
+            console.error('id-card-lookup-form lookup error:', error);
+            showPanelMessage('id-card-lookup-message', 'Unable to complete the search. Please try again.');
+        }
     });
 
     bindLookupForm('status-lookup-form', 'status-roll-input', 'status-cnic-input', 'status-lookup-message', (student, messageId) => {
@@ -224,32 +267,72 @@ document.addEventListener('DOMContentLoaded', () => {
         showPanelMessage(messageId, result ? `Result: ${result}` : 'No result has been published for this student yet.', Boolean(result) ? 'success' : 'error');
     });
 
+    async function downloadPDF() {
+        const element = document.querySelector('#id-card-wrapper')
+            || document.querySelector('#id-card-download-wrapper');
+        if (!element) return;
+        if (!window.domtoimage?.toPng || !window.jspdf?.jsPDF) {
+            throw new Error('PDF download libraries are unavailable.');
+        }
+
+        element.style.display = 'flex';
+        element.style.flexDirection = 'row';
+        element.style.flexWrap = 'nowrap';
+        element.style.gap = '20px';
+        element.style.alignItems = 'center';
+        element.style.justifyContent = 'center';
+        element.style.backgroundColor = '#ffffff';
+        element.style.padding = '20px';
+
+        const images = Array.from(element.querySelectorAll('img'));
+        await Promise.all(images.map((image) => {
+            if (image.complete) return Promise.resolve();
+            return new Promise((resolve) => {
+                image.onload = resolve;
+                image.onerror = resolve;
+            });
+        }));
+
+        const dataUrl = await window.domtoimage.toPng(element, {
+            quality: 0.95,
+            bgcolor: '#ffffff',
+            width: element.clientWidth * 2,
+            height: element.clientHeight * 2,
+            style: {
+                transform: 'scale(2)',
+                transformOrigin: 'top left',
+                width: `${element.clientWidth}px`,
+                height: `${element.clientHeight}px`
+            }
+        });
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
+        const imgProps = pdf.getImageProperties(dataUrl);
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const margin = 15;
+        const availableWidth = pdfWidth - (margin * 2);
+        const imgHeight = (imgProps.height * availableWidth) / imgProps.width;
+        const yPosition = (pdfHeight - imgHeight) / 2;
+        const studentCnic = normalizeCnic(document.getElementById('id-card-cnic-input')?.value);
+
+        pdf.addImage(dataUrl, 'PNG', margin, yPosition, availableWidth, imgHeight);
+        pdf.save(`Stellax_ID_Card_${studentCnic || 'Card'}.pdf`);
+    }
+
     document.getElementById('download-preview-pdf')?.addEventListener('click', async (event) => {
         const button = event.currentTarget;
-        const preview = document.getElementById('registration-id-card-preview');
-        if (!preview || typeof window.html2pdf !== 'function') {
-            showPanelMessage('id-card-lookup-message', 'PDF download is unavailable. Please refresh and try again.');
-            return;
-        }
-        const rollNumber = document.getElementById('preview-roll-number')?.textContent.trim() || 'student';
         button.disabled = true;
         button.textContent = 'Preparing PDF...';
-        preview.classList.add('pdf-export');
         try {
-            await window.html2pdf().set({
-                margin: 10,
-                filename: `stellax-id-card-${rollNumber}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(preview).save();
+            await downloadPDF();
         } catch (error) {
-            console.error('Registration ID card PDF error:', error);
-            showPanelMessage('id-card-lookup-message', 'Unable to create the PDF. Please try again.');
+            console.error('Registration ID card PDF download error:', error);
+            showPanelMessage('id-card-lookup-message', 'Unable to create the ID card PDF. Please try again.');
         } finally {
-            preview.classList.remove('pdf-export');
             button.disabled = false;
-            button.textContent = 'Download PDF';
+            button.textContent = 'Download ID Card';
         }
     });
 
