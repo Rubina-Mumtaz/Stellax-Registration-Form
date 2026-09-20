@@ -7,31 +7,100 @@
 // ==================================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    const DEFAULT_AVATAR_URL = 'assets/default-avatar.png';
     const form = document.getElementById('registration-form');
     const status = document.getElementById('form-status');
     const photoInput = document.getElementById('student-photo');
     const photoPreview = document.getElementById('photo-preview');
+    const fileNameText = document.getElementById('file-name-text');
+    const idCardPhoto = document.getElementById('student-photo-display')
+        || document.querySelector('.photo-container img');
+    const idCardPhotoPlaceholder = document.getElementById('preview-photo-placeholder');
+
+    const setImageSource = (image, source) => {
+        if (!image) return;
+        image.onerror = () => {
+            image.onerror = null;
+            image.src = DEFAULT_AVATAR_URL;
+        };
+        image.src = source || DEFAULT_AVATAR_URL;
+    };
+
+    const getCoursePrefix = (courseName) => {
+        const normalizedCourse = String(courseName || '').trim().toLowerCase();
+        const coursePrefixes = {
+            freelancing: 'FL-',
+            'web & app development': 'WAM-',
+            'graphic designing': 'GD-',
+            'digital marketing': 'DM-',
+            'video editing': 'VE-',
+            canva: 'CN-',
+            capcut: 'CC-',
+            '2d animation': '2A-'
+        };
+        return coursePrefixes[normalizedCourse] || 'ST-';
+    };
+
+    const generateRollNumber = (courseName) => {
+        const uniqueNumber = Math.floor(1 + Math.random() * 9999);
+        return `${getCoursePrefix(courseName)}${String(uniqueNumber).padStart(4, '0')}`;
+    };
 
     photoInput?.addEventListener('change', () => {
         const file = photoInput.files?.[0];
         if (!file) {
+            if (fileNameText) fileNameText.textContent = 'No file selected';
             photoPreview.innerHTML = '<i class="fa-solid fa-camera" aria-hidden="true"></i>';
+            if (idCardPhoto) {
+                idCardPhoto.removeAttribute('src');
+                idCardPhoto.hidden = true;
+            }
+            if (idCardPhotoPlaceholder) idCardPhotoPlaceholder.hidden = false;
             return;
         }
 
+        const isValidImage = file.type.startsWith('image/');
+        const isWithinSizeLimit = file.size <= 2 * 1024 * 1024;
+        if (!isValidImage || !isWithinSizeLimit) {
+            photoInput.value = '';
+            if (fileNameText) fileNameText.textContent = 'No file selected';
+            photoPreview.innerHTML = '<i class="fa-solid fa-camera" aria-hidden="true"></i>';
+            if (idCardPhoto) {
+                idCardPhoto.removeAttribute('src');
+                idCardPhoto.hidden = true;
+            }
+            if (idCardPhotoPlaceholder) idCardPhotoPlaceholder.hidden = false;
+            return;
+        }
+
+        if (fileNameText) fileNameText.textContent = file.name;
+
         const reader = new FileReader();
         reader.addEventListener('load', () => {
+            const imageSrc = reader.result;
             photoPreview.innerHTML = '';
             const image = document.createElement('img');
-            image.src = reader.result;
             image.alt = 'Selected student profile photo preview';
+            setImageSource(image, imageSrc);
             photoPreview.appendChild(image);
+
+            if (idCardPhoto) {
+                setImageSource(idCardPhoto, imageSrc);
+                idCardPhoto.hidden = false;
+            }
+            if (idCardPhotoPlaceholder) idCardPhotoPlaceholder.hidden = true;
         });
         reader.readAsDataURL(file);
     });
 
     form?.addEventListener('reset', () => {
         photoPreview.innerHTML = '<i class="fa-solid fa-camera" aria-hidden="true"></i>';
+        if (fileNameText) fileNameText.textContent = 'No file selected';
+        if (idCardPhoto) {
+            idCardPhoto.removeAttribute('src');
+            idCardPhoto.hidden = true;
+        }
+        if (idCardPhotoPlaceholder) idCardPhotoPlaceholder.hidden = false;
     });
 
     const tabButtons = [...document.querySelectorAll('[data-tab-target]')];
@@ -107,9 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const previewPhoto = document.getElementById('preview-photo');
         const photoPlaceholder = document.getElementById('preview-photo-placeholder');
         if (previewPhoto && photoPlaceholder) {
-            previewPhoto.src = student.photo_url || '';
-            previewPhoto.hidden = !student.photo_url;
-            photoPlaceholder.hidden = Boolean(student.photo_url);
+            setImageSource(previewPhoto, student.photo_url);
+            previewPhoto.hidden = false;
+            photoPlaceholder.hidden = true;
         }
         document.getElementById('id-card-preview')?.removeAttribute('hidden');
     };
@@ -333,9 +402,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const qualification = document.getElementById('qualification')?.value || '';
         const course = document.getElementById('course')?.value || '';
         const learningMode = form.querySelector("input[name='learningMode']:checked")?.value || 'Online';
-        const timing = form.querySelector("input[name='timing']:checked")?.value || '';
+        const shift = form.querySelector("input[name='shift']:checked")?.value || '';
         const agreement = document.getElementById('agreement')?.checked || false;
-        const photoFile = photoInput?.files?.[0] || null;
 
         // ---- Validate every required field before format checks ----
         let hasErrors = false;
@@ -358,17 +426,33 @@ document.addEventListener('DOMContentLoaded', () => {
         hasErrors = setError('cnic', !cnic ? 'Please enter your CNIC / B-Form number.' : !CNIC_PATTERN.test(cnic) ? 'CNIC / B-Form must contain exactly 13 digits.' : '') || hasErrors;
         hasErrors = setError('course', course ? '' : 'Please select a course.') || hasErrors;
         hasErrors = setError('learning-mode', learningMode ? '' : 'Please choose a learning preference.') || hasErrors;
-        hasErrors = setError('timing', timing ? '' : 'Please choose a class timing.') || hasErrors;
+        hasErrors = setError('shift', shift ? '' : 'Please choose a preferred shift.') || hasErrors;
         hasErrors = setError('agreement', agreement ? '' : 'Please confirm that your information is correct.') || hasErrors;
 
-        const photoError = !photoFile
-            ? 'Please upload a passport-size student photo.'
-            : !photoFile.type.startsWith('image/')
-                ? 'Please upload an image file.'
-                : photoFile.size > 2 * 1024 * 1024
-                    ? 'Student photo must be 2MB or smaller.'
-                    : '';
-        hasErrors = setError('student-photo', photoError) || hasErrors;
+        const photoInput = document.getElementById('student-photo');
+        const photoFile = photoInput && photoInput.files ? photoInput.files[0] : null;
+        if (!photoFile) {
+            alert('Please select a student photo.');
+            return;
+        }
+
+        const MAX_SIZE = 2 * 1024 * 1024;
+        if (photoFile.size > MAX_SIZE) {
+            alert('File size exceeds 2MB limit. Please select a smaller photo.');
+            return;
+        }
+
+        const fileName = photoFile.name.toLowerCase();
+        const isImageExtension = fileName.endsWith('.jpg')
+            || fileName.endsWith('.jpeg')
+            || fileName.endsWith('.png')
+            || fileName.endsWith('.webp');
+        const isImageMime = photoFile.type.startsWith('image/');
+
+        if (!isImageMime && !isImageExtension) {
+            alert('Invalid file format. Please upload a JPG or PNG image.');
+            return;
+        }
 
         if (phone && guardianPhone && phone.replace(/\D/g, '') === guardianPhone.replace(/\D/g, '')) {
             hasErrors = setError('whatsapp', 'Student and father phone numbers must be different.') || hasErrors;
@@ -390,35 +474,27 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const normalizedCourse = course.trim().toLowerCase();
-        const coursePrefixes = {
-            'graphic designing': 'GA-',
-            'digital marketing': 'DM-',
-            'web & app development': 'WD-',
-            'video editing': 'VE-',
-            canva: 'CN-',
-            freelancing: 'FL-'
-        };
-        const coursePrefix = coursePrefixes[normalizedCourse] || 'ST-';
-        const seriesStart = normalizedCourse === 'freelancing' ? 2000 : 1000;
-        const randomNumber = Math.floor(seriesStart + Math.random() * (10000 - seriesStart));
-        const provisionalRollNumber = `${coursePrefix}${randomNumber}`;
+        const roll_no = generateRollNumber(course);
 
         let photoUrl = '';
         try {
-            const fileExtension = photoFile.name.split('.').pop()?.toLowerCase() || 'jpg';
-            const photoPath = `${provisionalRollNumber}-${cnic}.${fileExtension}`;
+            const fileExt = fileName.split('.').pop() || 'jpg';
+            const uniqueFileName = `photo_${Date.now()}_${Math.floor(Math.random() * 1000)}.${fileExt}`;
             const { error: uploadError } = await supabase.storage
                 .from('student-photos')
-                .upload(photoPath, photoFile, { contentType: photoFile.type, upsert: false });
+                .upload(uniqueFileName, photoFile, {
+                    cacheControl: '3600',
+                    contentType: photoFile.type,
+                    upsert: true
+                });
 
             if (uploadError) throw uploadError;
             const { data: publicUrlData } = supabase.storage
                 .from('student-photos')
-                .getPublicUrl(photoPath);
+                .getPublicUrl(uniqueFileName);
             photoUrl = publicUrlData.publicUrl;
         } catch (error) {
-            console.error('Student photo upload error:', error);
+            console.error('Supabase Storage Error:', error);
             showStatus('Photo upload failed. Please try again with a JPG or PNG image under 2MB.', 'error');
             return;
         }
@@ -436,10 +512,12 @@ document.addEventListener('DOMContentLoaded', () => {
             address: address,
             qualification: qualification,
             course_selected: course,
-            roll_number: provisionalRollNumber,
+            roll_number: roll_no,
             learning_mode: learningMode,
-            timing: timing,
-            batch: 'Pending',
+            shift: shift,
+            timing: null,
+            batch: null,
+            class_days: null,
             status: 'Pending',
             photo_url: photoUrl
         };
@@ -452,6 +530,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Database Error:', error);
                 showStatus('Registration Failed: ' + error.message, 'error');
             } else {
+                window.lastGeneratedRollNo = roll_no;
+                window.lastGeneratedRollNumber = roll_no;
+                window.lastSubmittedStudent = { ...studentData, ...(data?.[0] || {}) };
                 form.reset();
                 const onlineMode = form.querySelector("input[name='learningMode'][value='Online']");
                 if (onlineMode) onlineMode.checked = true;

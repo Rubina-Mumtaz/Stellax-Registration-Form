@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		const cnicInput = document.getElementById('cnic-number');
 		const rollNumber = rollInput?.value.trim().toUpperCase() || '';
 		const cnicNumber = cnicInput?.value.trim() || '';
-		const validRollNumber = /^[A-Z]{2}-\d{4}$/.test(rollNumber);
+		const validRollNumber = /^[A-Z0-9]{2,3}-\d{4}$/.test(rollNumber);
 		const validCnicNumber = /^\d{13}$/.test(cnicNumber);
 
 		if (!rollNumber || !cnicNumber || !validRollNumber || !validCnicNumber) {

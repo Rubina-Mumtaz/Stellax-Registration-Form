@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
+    const DEFAULT_AVATAR_URL = '../assets/default-avatar.png';
     const dashboardView = document.getElementById('dashboard-view');
     const supabaseClient = window.supabaseClient;
     const storedStudentId = localStorage.getItem('studentId');
@@ -11,6 +12,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const setText = (id, value, fallback = '') => {
         const element = document.getElementById(id);
         if (element) element.textContent = value ?? fallback;
+    };
+    const setProfileImage = (source) => {
+        const image = document.getElementById('student-profile-img')
+            || document.querySelector('.user-profile-avatar');
+        if (!image) return;
+        image.onerror = () => {
+            image.onerror = null;
+            image.src = DEFAULT_AVATAR_URL;
+        };
+        image.src = source || DEFAULT_AVATAR_URL;
     };
     const firstValue = (record, keys, fallback = 0) => {
         for (const key of keys) {
@@ -100,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         setText('sidebar-student-name', fullName, 'Student');
         setText('sidebar-student-contact', email || rollNumber, rollNumber);
+        setProfileImage(student.photo_url);
         setText('breadcrumb-course', course, 'Modern Web Application Development');
         setText('selected-course', course, 'Modern Web Application Development');
         setText('profile-roll-number', rollNumber, 'Not assigned');

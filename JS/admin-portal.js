@@ -28,6 +28,17 @@ document.addEventListener('DOMContentLoaded', () => {
 	const getCourse = (student) => student.course_selected || student.course || '';
 	const getBatch = (student) => student.batch || student.batch_preference || student.batch_name || student.batch_number || 'Pending';
 	const getStatus = (student) => student.status || student.admission_status || student.registration_status || 'Pending';
+	const getDays = (student) => student.class_days || student.days || '';
+	const coursePrefixes = {
+		'digital marketing': 'DM-',
+		'web & app development': 'WAM-',
+		'graphic designing': 'GD-',
+		'video editing': 'VE-',
+		freelancing: 'FL-',
+		canva: 'CN-',
+		capcut: 'CC-',
+		'2d animation': '2A-'
+	};
 
 	const setText = (id, value) => {
 		const element = document.getElementById(id);
@@ -174,20 +185,39 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	const generateRollNumber = (student) => {
-		const coursePrefixes = {
-			'digital marketing': 'DM',
-			'web & app development': 'WD',
-			'graphic designing': 'GA',
-			'video editing': 'VE',
-			freelancing: 'FL',
-			canva: 'CN'
-		};
-		const prefix = coursePrefixes[normalize(getCourse(student))] || 'FL';
+		const prefix = coursePrefixes[normalize(getCourse(student))] || 'ST-';
 		const usedRollNumbers = new Set(allStudents.map(getRollNumber).filter(Boolean));
-		let number = 2001;
-		let candidate = `${prefix}-${number}`;
-		while (usedRollNumbers.has(candidate)) candidate = `${prefix}-${++number}`;
+		let number = 1;
+		let candidate = `${prefix}${String(number).padStart(4, '0')}`;
+		while (usedRollNumbers.has(candidate) && number < 9999) {
+			number += 1;
+			candidate = `${prefix}${String(number).padStart(4, '0')}`;
+		}
 		return candidate;
+	};
+
+	const saveStudentSchedule = async (student, row) => {
+		const updates = {
+			timing: row.querySelector('[data-edit-field="timing"]')?.value.trim() || null,
+			batch: row.querySelector('[data-edit-field="batch"]')?.value.trim() || null,
+			class_days: row.querySelector('[data-edit-field="days"]')?.value.trim() || null
+		};
+		const { error } = await supabase.from('students').update(updates).eq('id', student.id);
+		if (error) throw error;
+		await loadStudents();
+	};
+
+	const renderEditControls = (student, row) => {
+		const actionsCell = row.querySelector('.table-actions');
+		if (!actionsCell) return;
+		const fieldValue = (value) => String(value || '').replace(/"/g, '&quot;');
+		actionsCell.innerHTML = `<div class="student-edit-fields">
+			<input data-edit-field="timing" type="text" value="${fieldValue(student.timing)}" placeholder="10:00 AM - 12:00 PM" aria-label="Timing">
+			<input data-edit-field="batch" type="text" value="${fieldValue(student.batch)}" placeholder="Batch 01" aria-label="Batch">
+			<input data-edit-field="days" type="text" value="${fieldValue(getDays(student))}" placeholder="MWF / TTS" aria-label="Class days">
+			<button class="button button-small button-success" type="button" data-action="save-edit">Save</button>
+			<button class="button button-small button-quiet" type="button" data-action="cancel-edit">Cancel</button>
+		</div>`;
 	};
 
 	const updateStudentStatus = async (student, status) => {
@@ -210,15 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			}
 
 			const student = allStudents.find((item) => String(item.id) === String(studentId));
-			const courseName = String(getCourse(student || '')).toLowerCase().trim();
-			let prefix = 'ST-';
-			if (courseName.includes('canva')) prefix = 'CV-';
-			else if (courseName.includes('freelance')) prefix = 'FL-';
-			else if (courseName.includes('web')) prefix = 'WD-';
-			else if (courseName.includes('marketing') || courseName.includes('digital')) prefix = 'DM-';
-			else if (courseName.includes('graphic') || courseName.includes('design')) prefix = 'GD-';
-
-			const generatedRoll = prefix + Math.floor(1000 + Math.random() * 9000);
+			const generatedRoll = getRollNumber(student || '') || generateRollNumber(student || {});
 
 			const { data, error } = await supabase
 				.from('students')
@@ -253,6 +275,24 @@ document.addEventListener('DOMContentLoaded', () => {
 		const action = button.dataset.action;
 		if (!student || !action) return;
 		if (action === 'approve') return;
+		if (action === 'edit') {
+			renderEditControls(student, row);
+			return;
+		}
+		if (action === 'cancel-edit') {
+			applyFilters();
+			return;
+		}
+		if (action === 'save-edit') {
+			button.disabled = true;
+			try {
+				await saveStudentSchedule(student, row);
+			} catch (error) {
+				console.error('Student schedule update error:', error);
+				window.alert('Unable to save the student schedule. Please try again.');
+			}
+			return;
+		}
 
 		if (action === 'delete' && !window.confirm(`Delete ${getStudentName(student)} from the student records?`)) return;
 		const originalText = button.textContent;

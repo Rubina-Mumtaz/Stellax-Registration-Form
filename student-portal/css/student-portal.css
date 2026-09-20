@@ -59,7 +59,7 @@ button { font: inherit; cursor: pointer; }
 .profile-trigger strong { font-size: 12px; }
 .profile-trigger small { margin-top: 2px; color: var(--muted); font-size: 10px; }
 .profile-trigger > i { margin-left: auto; color: var(--muted); }
-.profile-avatar { width: 35px; height: 35px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg, #7a9dea, #3f78ed); border-radius: 50%; font-weight: 700; }
+.profile-avatar { width: 35px; height: 35px; display: grid; place-items: center; color: #fff; background: linear-gradient(145deg, #7a9dea, #3f78ed); border-radius: 50%; font-weight: 700; object-fit: cover; }
 .main-content { flex: 1; min-width: 0; padding: 20px; }
 .portal-main { flex: 1; min-width: 0; padding: 37px 44px 50px; }
 .main-content #dashboard-view { display: block; }

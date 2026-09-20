@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Apply to join Stellax Academy and start your learning journey.">
 	<title>Student Registration | Stellax Academy</title>
 	<!-- Google Fonts Preconnect -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Poppins Google Font Link -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+	<!-- Poppins Google Font Link -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+		rel="stylesheet">
 
-<!-- Apni Main CSS File -->
-<link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/id-card.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+	<!-- Apni Main CSS File -->
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="stylesheet" href="css/id-card.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-<!-- 1. Supabase CDN Library (must load first) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+	<!-- 1. Supabase CDN Library (must load first) -->
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
-<script src="supaBase/supabase.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+	<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
+	<script src="supaBase/supabase.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
-<script src="JS/script.js" defer></script>
+	<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
+	<script src="JS/script.js" defer></script>
 </head>
+
 <body>
 	<div class="page-shell">
 		<header class="site-header">
@@ -46,201 +49,232 @@
 		<main class="main-content">
 			<div class="registration-card">
 				<nav class="portal-tabs" aria-label="Student portal sections" role="tablist">
-					<button class="portal-tab is-active" id="tab-button-registration" type="button" role="tab" aria-selected="true" aria-controls="tab-registration" data-tab-target="tab-registration">Registration Form</button>
-					<button class="portal-tab" id="tab-button-idcard" type="button" role="tab" aria-selected="false" aria-controls="tab-idcard" data-tab-target="tab-idcard">Download ID Card</button>
-					<button class="portal-tab" id="tab-button-status" type="button" role="tab" aria-selected="false" aria-controls="tab-status" data-tab-target="tab-status">Entry Test Status</button>
-					<button class="portal-tab" id="tab-button-result" type="button" role="tab" aria-selected="false" aria-controls="tab-result" data-tab-target="tab-result">Result</button>
+					<button class="portal-tab is-active" id="tab-button-registration" type="button" role="tab"
+						aria-selected="true" aria-controls="tab-registration"
+						data-tab-target="tab-registration">Registration Form</button>
+					<button class="portal-tab" id="tab-button-idcard" type="button" role="tab" aria-selected="false"
+						aria-controls="tab-idcard" data-tab-target="tab-idcard">Download ID Card</button>
+					<button class="portal-tab" id="tab-button-status" type="button" role="tab" aria-selected="false"
+						aria-controls="tab-status" data-tab-target="tab-status">Entry Test Status</button>
+					<button class="portal-tab" id="tab-button-result" type="button" role="tab" aria-selected="false"
+						aria-controls="tab-result" data-tab-target="tab-result">Result</button>
 				</nav>
 
-				<section class="portal-tab-panel is-active" id="tab-registration" role="tabpanel" aria-labelledby="tab-button-registration">
-				<div class="intro">
-					<p>Complete the registration form below to apply for your selected course at Stellax Academy.</p>
-					<p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
-				</div>
-
-				<form id="registration-form" novalidate>
-					<fieldset>
-						<legend><span>01</span> Personal Information</legend>
-						<div class="field-grid two-columns">
-							<div class="field field-required">
-								<label for="full-name">Full Name <span aria-hidden="true">*</span></label>
-								<input type="text" id="full-name" name="fullName" autocomplete="name" required>
-								<p class="error-message" id="full-name-error" role="alert"></p>
-							</div>
-							<div class="field">
-								<label for="guardian-name">Father's / Guardian's Name</label>
-								<input type="text" id="guardian-name" name="guardianName" autocomplete="name" required>
-							</div>
-							<div class="field">
-								<label for="date-of-birth">Date of Birth</label>
-								<input type="date" id="date-of-birth" name="dateOfBirth" required>
-							</div>
-							<div class="field">
-								<span class="field-label">Gender</span>
-								<div class="option-row">
-									<label class="choice"><input type="radio" name="gender" value="Male" required> <span>Male</span></label>
-									<label class="choice"><input type="radio" name="gender" value="Female" required> <span>Female</span></label>
-									<label class="choice"><input type="radio" name="gender" value="Prefer not to say" required> <span>Prefer not to say</span></label>
-								</div>
-							</div>
-							<div class="field field-full form-group photo-upload-group">
-								<label for="student-photo">Student Photo (Passport Size) <span aria-hidden="true">*</span></label>
-								<div class="photo-upload-box">
-									<div class="preview-circle" id="photo-preview" aria-live="polite">
-										<i class="fa-solid fa-camera" aria-hidden="true"></i>
-									</div>
-									<div class="photo-upload-controls">
-										<input type="file" id="student-photo" name="studentPhoto" accept="image/*" required>
-										<span class="upload-hint">Upload JPG/PNG (Max 2MB)</span>
-									</div>
-								</div>
-								<p class="error-message" id="student-photo-error" role="alert"></p>
-							</div>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>02</span> Contact Information</legend>
-						<div class="field-grid two-columns">
-							<div class="field field-required">
-								<label for="email">Email Address <span aria-hidden="true">*</span></label>
-								<input type="email" id="email" name="email" autocomplete="email" required>
-								<p class="error-message" id="email-error" role="alert"></p>
-							</div>
-							<div class="field field-required">
-								<label for="phone">Father's Phone Number <span aria-hidden="true">*</span></label>
-								<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" required>
-								<p class="error-message" id="phone-error" role="alert"></p>
-							</div>
-							<div class="field field-required">
-								<label for="cnic">CNIC / B-Form Number <span aria-hidden="true">*</span></label>
-								<input type="text" id="cnic" name="cnic" placeholder="4210112345671" maxlength="13" pattern="[0-9]{13}" inputmode="numeric" required>
-								<p class="error-message" id="cnic-error" role="alert"></p>
-							</div>
-							<div class="field">
-								<label for="whatsapp">Student Phone Number <span aria-hidden="true">*</span></label>
-								<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel" required>
-								<p class="error-message" id="whatsapp-error" role="alert"></p>
-							</div>
-							<div class="field">
-								<label for="city">City</label>
-								<input type="text" id="city" name="city" autocomplete="address-level2" required>
-							</div>
-							<div class="field field-full">
-								<label for="address">Address</label>
-								<textarea id="address" name="address" rows="3" autocomplete="street-address" required></textarea>
-							</div>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>03</span> Course Selection</legend>
-						<div class="field-grid">
-							<div class="field field-required">
-								<label for="course">Choose a Course <span aria-hidden="true">*</span></label>
-								<select id="course" name="course" required>
-									<option value="">Select a Course</option>
-									<option value="Web &amp; App Development">Web &amp; App Development</option>
-									<option value="Graphic Designing">Graphic Designing</option>
-									<option value="Digital Marketing">Digital Marketing</option>
-									<option value="Video Editing">Video Editing</option>
-									<option value="2D animation">2D Animation</option>
-									<option value="freelancing">Freelancing</option>
-									<option value="capcut">CapCut</option>
-									<option value="canva">Canva</option>
-								</select>
-								<p class="error-message" id="course-error" role="alert"></p>
-							</div>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>04</span> Education</legend>
-						<div class="field-grid two-columns">
-							<div class="field">
-								<label for="qualification">Highest Qualification</label>
-								<input type="text" id="qualification" name="qualification" required>
-							</div>
-							<div class="field">
-								<label for="institute">Institute / School / College / University</label>
-								<input type="text" id="institute" name="institute" required>
-							</div>
-							<div class="field">
-								<span class="field-label">Current Student?</span>
-								<div class="option-row">
-									<label class="choice"><input type="radio" name="currentStudent" value="Yes" required> <span>Yes</span></label>
-									<label class="choice"><input type="radio" name="currentStudent" value="No" required> <span>No</span></label>
-								</div>
-							</div>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>05</span> Learning Preference</legend>
-						<div class="field field-required">
-							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
-							<div class="preference-grid" id="learning-mode-group">
-									<label class="preference"><input type="radio" name="learningMode" value="Online" required checked><span>Online</span></label>
-									<label class="preference disabled-option"><input type="radio" name="learningMode" value="Onsite" required disabled><span>Onsite</span><span class="badge-coming-soon">Coming Soon</span></label>
-									<label class="preference disabled-option"><input type="radio" name="learningMode" value="Hybrid" required disabled><span>Hybrid</span><span class="badge-coming-soon">Coming Soon</span></label>
-							</div>
-							<p class="error-message" id="learning-mode-error" role="alert"></p>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>06</span> Class Timing</legend>
-						<div class="field field-required">
-							<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
-							<div class="preference-grid" id="timing-group">
-									<label class="preference"><input type="radio" name="timing" value="Morning" required><span>Morning</span></label>
-									<label class="preference"><input type="radio" name="timing" value="Afternoon" required><span>Afternoon</span></label>
-									<label class="preference"><input type="radio" name="timing" value="Evening" required><span>Evening</span></label>
-							</div>
-							<p class="error-message" id="timing-error" role="alert"></p>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>07</span> Additional Information</legend>
-						<div class="field-grid">
-							<div class="field">
-								<label for="motivation">Why do you want to join Stellax Academy?</label>
-								<textarea id="motivation" name="motivation" rows="5" required></textarea>
-							</div>
-							<div class="field">
-								<label for="referral">How did you hear about us?</label>
-								<select id="referral" name="referral" required>
-									<option value="">Select an option</option>
-									<option>Facebook</option>
-									<option>Instagram</option>
-									<option>YouTube</option>
-									<option>LinkedIn</option>
-									<option>Google Search</option>
-									<option>Friend / Family</option>
-									<option>Other</option>
-								</select>
-							</div>
-						</div>
-					</fieldset>
-
-					<fieldset>
-						<legend><span>08</span> Agreement</legend>
-						<label class="agreement-choice" for="agreement">
-							<input type="checkbox" id="agreement" name="agreement" required>
-							<span>I confirm that the information provided in this application is correct.</span>
-						</label>
-						<p class="error-message" id="agreement-error" role="alert"></p>
-					</fieldset>
-
-					<div class="form-actions">
-						<button type="submit">Submit Application <span aria-hidden="true">&#8594;</span></button>
-						<p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+				<section class="portal-tab-panel is-active" id="tab-registration" role="tabpanel"
+					aria-labelledby="tab-button-registration">
+					<div class="intro">
+						<p>Complete the registration form below to apply for your selected course at Stellax Academy.
+						</p>
+						<p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
 					</div>
-				</form>
+
+					<form id="registration-form" novalidate>
+						<fieldset>
+							<legend><span>01</span> Personal Information</legend>
+							<div class="field-grid two-columns">
+								<div class="field field-required">
+									<label for="full-name">Full Name <span aria-hidden="true">*</span></label>
+									<input type="text" id="full-name" name="fullName" autocomplete="name" required>
+									<p class="error-message" id="full-name-error" role="alert"></p>
+								</div>
+								<div class="field">
+									<label for="guardian-name">Father's / Guardian's Name</label>
+									<input type="text" id="guardian-name" name="guardianName" autocomplete="name"
+										required>
+								</div>
+								<div class="field">
+									<label for="date-of-birth">Date of Birth</label>
+									<input type="date" id="date-of-birth" name="dateOfBirth" required>
+								</div>
+								<div class="field">
+									<span class="field-label">Gender</span>
+									<div class="option-row">
+										<label class="choice"><input type="radio" name="gender" value="Male" required>
+											<span>Male</span></label>
+										<label class="choice"><input type="radio" name="gender" value="Female" required>
+											<span>Female</span></label>
+										<label class="choice"><input type="radio" name="gender"
+												value="Prefer not to say" required> <span>Prefer not to
+												say</span></label>
+									</div>
+								</div>
+								<div class="field field-full form-group photo-upload-group">
+									<label for="student-photo">Student Photo (Passport Size) <span class="required"
+											aria-hidden="true">*</span></label>
+									<div class="custom-photo-uploader">
+										<div class="photo-preview-box" id="photo-preview" aria-live="polite">
+											<i class="fa-solid fa-camera" aria-hidden="true"></i>
+										</div>
+										<div class="upload-action-content">
+											<label for="student-photo" class="btn-upload-trigger">
+												<i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i> Upload
+												Image
+											</label>
+											<input type="file" id="student-photo" name="studentPhoto" accept="image/*"
+												required class="hidden-file-input">
+											<span class="file-name-display" id="file-name-text">No file selected</span>
+											<span class="upload-hint">Supported formats: JPG, PNG (Max size: 2MB)</span>
+										</div>
+									</div>
+									<p class="error-message" id="student-photo-error" role="alert"></p>
+								</div>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>02</span> Contact Information</legend>
+							<div class="field-grid two-columns">
+								<div class="field field-required">
+									<label for="email">Email Address <span aria-hidden="true">*</span></label>
+									<input type="email" id="email" name="email" autocomplete="email" required>
+									<p class="error-message" id="email-error" role="alert"></p>
+								</div>
+								<div class="field field-required">
+									<label for="phone">Father's Phone Number <span aria-hidden="true">*</span></label>
+									<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel"
+										required>
+									<p class="error-message" id="phone-error" role="alert"></p>
+								</div>
+								<div class="field field-required">
+									<label for="cnic">CNIC / B-Form Number <span aria-hidden="true">*</span></label>
+									<input type="text" id="cnic" name="cnic" placeholder="4210112345671" maxlength="13"
+										pattern="[0-9]{13}" inputmode="numeric" required>
+									<p class="error-message" id="cnic-error" role="alert"></p>
+								</div>
+								<div class="field">
+									<label for="whatsapp">Student Phone Number <span aria-hidden="true">*</span></label>
+									<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel"
+										required>
+									<p class="error-message" id="whatsapp-error" role="alert"></p>
+								</div>
+								<div class="field">
+									<label for="city">City</label>
+									<input type="text" id="city" name="city" autocomplete="address-level2" required>
+								</div>
+								<div class="field field-full">
+									<label for="address">Address</label>
+									<textarea id="address" name="address" rows="3" autocomplete="street-address"
+										required></textarea>
+								</div>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>03</span> Course Selection</legend>
+							<div class="field-grid">
+								<div class="field field-required">
+									<label for="course">Choose a Course <span aria-hidden="true">*</span></label>
+									<select id="course" name="course" required>
+										<option value="">Select a Course</option>
+										<option value="Web &amp; App Development">Web &amp; App Development</option>
+										<option value="Graphic Designing">Graphic Designing</option>
+										<option value="Digital Marketing">Digital Marketing</option>
+										<option value="Video Editing">Video Editing</option>
+										<option value="2D animation">2D Animation</option>
+										<option value="freelancing">Freelancing</option>
+										<option value="capcut">CapCut</option>
+										<option value="canva">Canva</option>
+									</select>
+									<p class="error-message" id="course-error" role="alert"></p>
+								</div>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>04</span> Education</legend>
+							<div class="field-grid two-columns">
+								<div class="field">
+									<label for="qualification">Highest Qualification</label>
+									<input type="text" id="qualification" name="qualification" required>
+								</div>
+								<div class="field">
+									<label for="institute">Institute / School / College / University</label>
+									<input type="text" id="institute" name="institute" required>
+								</div>
+								<div class="field">
+									<span class="field-label">Current Student?</span>
+									<div class="option-row">
+										<label class="choice"><input type="radio" name="currentStudent" value="Yes"
+												required> <span>Yes</span></label>
+										<label class="choice"><input type="radio" name="currentStudent" value="No"
+												required> <span>No</span></label>
+									</div>
+								</div>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>05</span> Learning Preference</legend>
+							<div class="field field-required">
+								<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
+								<div class="preference-grid" id="learning-mode-group">
+									<label class="preference"><input type="radio" name="learningMode" value="Online"
+											required checked><span>Online</span></label>
+									<label class="preference disabled-option"><input type="radio" name="learningMode"
+											value="Onsite" required disabled><span>Onsite</span><span
+											class="badge-coming-soon">Coming Soon</span></label>
+									<label class="preference disabled-option"><input type="radio" name="learningMode"
+											value="Hybrid" required disabled><span>Hybrid</span><span
+											class="badge-coming-soon">Coming Soon</span></label>
+								</div>
+								<p class="error-message" id="learning-mode-error" role="alert"></p>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>06</span> Preferred Shift</legend>
+							<div class="field field-required">
+								<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
+								<div class="preference-grid" id="shift-group">
+									<label class="preference"><input type="radio" name="shift" value="Morning" required><span>Morning</span></label>
+									<label class="preference"><input type="radio" name="shift" value="Afternoon" required><span>Afternoon</span></label>
+									<label class="preference"><input type="radio" name="shift" value="Evening" required><span>Evening</span></label>
+								</div>
+								<p class="error-message" id="shift-error" role="alert"></p>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>07</span> Additional Information</legend>
+							<div class="field-grid">
+								<div class="field">
+									<label for="motivation">Why do you want to join Stellax Academy?</label>
+									<textarea id="motivation" name="motivation" rows="5" required></textarea>
+								</div>
+								<div class="field">
+									<label for="referral">How did you hear about us?</label>
+									<select id="referral" name="referral" required>
+										<option value="">Select an option</option>
+										<option>Facebook</option>
+										<option>Instagram</option>
+										<option>YouTube</option>
+										<option>LinkedIn</option>
+										<option>Google Search</option>
+										<option>Friend / Family</option>
+										<option>Other</option>
+									</select>
+								</div>
+							</div>
+						</fieldset>
+
+						<fieldset>
+							<legend><span>08</span> Agreement</legend>
+							<label class="agreement-choice" for="agreement">
+								<input type="checkbox" id="agreement" name="agreement" required>
+								<span>I confirm that the information provided in this application is correct.</span>
+							</label>
+							<p class="error-message" id="agreement-error" role="alert"></p>
+						</fieldset>
+
+						<div class="form-actions">
+							<button type="submit">Submit Application <span aria-hidden="true">&#8594;</span></button>
+							<p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+						</div>
+					</form>
 				</section>
 
-				<section class="portal-tab-panel" id="tab-idcard" role="tabpanel" aria-labelledby="tab-button-idcard" hidden>
+				<section class="portal-tab-panel" id="tab-idcard" role="tabpanel" aria-labelledby="tab-button-idcard"
+					hidden>
 					<div class="tab-panel-heading">
 						<p class="section-kicker">Student services</p>
 						<h2>Download ID Card</h2>
@@ -248,18 +282,24 @@
 					</div>
 					<form id="id-card-lookup-form" class="portal-lookup-form" novalidate>
 						<div class="field-grid two-columns">
-							<div class="field"><label for="id-card-roll-number-input">Roll Number</label><input id="id-card-roll-number-input" type="text" placeholder="e.g., FL-2001" required></div>
-							<div class="field"><label for="id-card-cnic-input">CNIC Number</label><input id="id-card-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC" required></div>
+							<div class="field"><label for="id-card-roll-number-input">Roll Number</label><input
+									id="id-card-roll-number-input" type="text" placeholder="e.g., FL-2001" required>
+							</div>
+							<div class="field"><label for="id-card-cnic-input">CNIC Number</label><input
+									id="id-card-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC"
+									required></div>
 						</div>
 						<button class="portal-panel-button" type="submit">Find ID Card</button>
-						<p class="portal-panel-message" id="id-card-lookup-message" role="status" aria-live="polite"></p>
+						<p class="portal-panel-message" id="id-card-lookup-message" role="status" aria-live="polite">
+						</p>
 					</form>
 					<div class="id-card-preview" id="id-card-preview" hidden>
 						<div class="id-card-wrapper" id="registration-id-card-preview">
 							<article class="id-card id-card-front" aria-label="Student ID card front">
 								<header class="card-header">
 									<div class="brand-group">
-										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo" class="id-card-logo">
+										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo"
+											class="id-card-logo">
 										<div class="brand-text">
 											<h2>STELLAX ACADEMY</h2>
 											<p>IT TECHNOLOGY &amp; DIGITAL MARKETING</p>
@@ -267,20 +307,38 @@
 									</div>
 								</header>
 								<div class="id-card-front-body">
-									<div class="id-card-photo photo-container"><img id="preview-photo" alt="Student profile photo" hidden><span id="preview-photo-placeholder">PHOTO</span></div>
+									<div class="id-card-photo photo-container"><img id="preview-photo"
+											alt="Student profile photo" onerror="this.onerror=null; this.src='assets/default-avatar.png'" hidden><span
+											id="preview-photo-placeholder">PHOTO</span></div>
 									<dl class="id-card-details">
-										<div><dt>Student Name</dt><dd id="preview-student-name"></dd></div>
-										<div><dt>Father Name</dt><dd id="preview-father-name"></dd></div>
-										<div><dt>CNIC</dt><dd id="preview-cnic"></dd></div>
-										<div><dt>Roll Number / ID</dt><dd id="preview-roll-number"></dd></div>
-										<div><dt>Course</dt><dd id="preview-course"></dd></div>
+										<div>
+											<dt>Student Name</dt>
+											<dd id="preview-student-name"></dd>
+										</div>
+										<div>
+											<dt>Father Name</dt>
+											<dd id="preview-father-name"></dd>
+										</div>
+										<div>
+											<dt>CNIC</dt>
+											<dd id="preview-cnic"></dd>
+										</div>
+										<div>
+											<dt>Roll Number / ID</dt>
+											<dd id="preview-roll-number"></dd>
+										</div>
+										<div>
+											<dt>Course</dt>
+											<dd id="preview-course"></dd>
+										</div>
 									</dl>
 								</div>
 							</article>
 							<article class="id-card id-card-back" aria-label="Student ID card back">
 								<header class="card-header">
 									<div class="brand-group">
-										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo" class="id-card-logo">
+										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo"
+											class="id-card-logo">
 										<div class="brand-text">
 											<h2>STELLAX ACADEMY</h2>
 											<p>IT TECHNOLOGY &amp; DIGITAL MARKETING</p>
@@ -295,30 +353,56 @@
 										<li>Contact administration in case of loss.</li>
 									</ol>
 									<div class="id-card-verification">
-										<div class="id-card-signature"><span>Authorized Signature</span><strong>STELLAX ADMINISTRATION</strong></div>
-										<div id="qrcode" class="qr-code-container" aria-label="Attendance QR code"></div>
+										<div class="id-card-signature"><span>Authorized Signature</span><strong>STELLAX
+												ADMINISTRATION</strong></div>
+										<div id="qrcode" class="qr-code-container" aria-label="Attendance QR code">
+										</div>
 									</div>
 								</div>
-								<footer class="id-card-footer">Emergency: Contact Academy Administration &bull; Stellax Academy Campus</footer>
+								<footer class="id-card-footer">Emergency: Contact Academy Administration &bull; Stellax
+									Academy Campus</footer>
 							</article>
 						</div>
-						<button class="portal-panel-button" id="download-preview-pdf" type="button">Download PDF</button>
+						<button class="portal-panel-button" id="download-preview-pdf" type="button">Download
+							PDF</button>
 					</div>
 				</section>
 
-				<section class="portal-tab-panel" id="tab-status" role="tabpanel" aria-labelledby="tab-button-status" hidden>
-					<div class="tab-panel-heading"><p class="section-kicker">Application tracking</p><h2>Entry Test Status</h2><p>Check your admission or entry test approval status.</p></div>
+				<section class="portal-tab-panel" id="tab-status" role="tabpanel" aria-labelledby="tab-button-status"
+					hidden>
+					<div class="tab-panel-heading">
+						<p class="section-kicker">Application tracking</p>
+						<h2>Entry Test Status</h2>
+						<p>Check your admission or entry test approval status.</p>
+					</div>
 					<form id="status-lookup-form" class="portal-lookup-form" novalidate>
-						<div class="field-grid two-columns"><div class="field"><label for="status-roll-input">Roll Number</label><input id="status-roll-input" type="text" placeholder="e.g., FL-2001" required></div><div class="field"><label for="status-cnic-input">CNIC Number</label><input id="status-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC" required></div></div>
+						<div class="field-grid two-columns">
+							<div class="field"><label for="status-roll-input">Roll Number</label><input
+									id="status-roll-input" type="text" placeholder="e.g., FL-2001" required></div>
+							<div class="field"><label for="status-cnic-input">CNIC Number</label><input
+									id="status-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC"
+									required></div>
+						</div>
 						<button class="portal-panel-button" type="submit">Check Status</button>
 						<p class="portal-panel-message" id="status-lookup-message" role="status" aria-live="polite"></p>
 					</form>
 				</section>
 
-				<section class="portal-tab-panel" id="tab-result" role="tabpanel" aria-labelledby="tab-button-result" hidden>
-					<div class="tab-panel-heading"><p class="section-kicker">Academic records</p><h2>Result</h2><p>Search your entry test or final exam result using your Roll Number and CNIC.</p></div>
+				<section class="portal-tab-panel" id="tab-result" role="tabpanel" aria-labelledby="tab-button-result"
+					hidden>
+					<div class="tab-panel-heading">
+						<p class="section-kicker">Academic records</p>
+						<h2>Result</h2>
+						<p>Search your entry test or final exam result using your Roll Number and CNIC.</p>
+					</div>
 					<form id="result-lookup-form" class="portal-lookup-form" novalidate>
-						<div class="field-grid two-columns"><div class="field"><label for="result-roll-input">Roll Number</label><input id="result-roll-input" type="text" placeholder="e.g., FL-2001" required></div><div class="field"><label for="result-cnic-input">CNIC Number</label><input id="result-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC" required></div></div>
+						<div class="field-grid two-columns">
+							<div class="field"><label for="result-roll-input">Roll Number</label><input
+									id="result-roll-input" type="text" placeholder="e.g., FL-2001" required></div>
+							<div class="field"><label for="result-cnic-input">CNIC Number</label><input
+									id="result-cnic-input" type="text" inputmode="numeric" placeholder="13-digit CNIC"
+									required></div>
+						</div>
 						<button class="portal-panel-button" type="submit">Check Result</button>
 						<p class="portal-panel-message" id="result-lookup-message" role="status" aria-live="polite"></p>
 					</form>
@@ -330,4 +414,5 @@
 	</div>
 
 </body>
+
 </html>
