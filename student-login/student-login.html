@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Student login for Stellax Academy">
+    <title>Student Login | Stellax Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/student-login.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supaBase/supabase.js"></script>
+</head>
+<body>
+    <main class="login-card" aria-labelledby="page-title">
+        <header class="login-header">
+            <img src="../Images/stellax logo White.png" alt="Stellax Academy logo">
+            <h1 id="page-title">Student Portal</h1>
+        </header>
+
+        <div class="login-body">
+            <nav class="tabs" aria-label="Student portal actions" role="tablist">
+                <button class="tab is-active" id="login-tab" type="button" role="tab" aria-selected="true" aria-controls="login-panel" data-tab-target="login-panel">Login</button>
+                <button class="tab" id="password-tab" type="button" role="tab" aria-selected="false" aria-controls="password-panel" data-tab-target="password-panel">Create Password</button>
+            </nav>
+
+            <section class="panel" id="login-panel" role="tabpanel" aria-labelledby="login-tab">
+                <p class="subtitle">Kindly provide the CNIC number and password used during Stellax Academy course registration.</p>
+                <form id="student-login-form" novalidate>
+                    <div class="field">
+                        <label for="login-cnic">CNIC <span aria-hidden="true">*</span></label>
+                        <input id="login-cnic" name="cnic" type="text" inputmode="numeric" autocomplete="username" placeholder="Enter CNIC number" required>
+                    </div>
+                    <div class="field">
+                        <label for="login-password">Password <span aria-hidden="true">*</span></label>
+                        <div class="input-wrap">
+                            <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required>
+                            <button class="toggle-password" type="button" data-password-toggle="login-password" aria-label="Show password" title="Show password">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-5 9.5-5 9.5 5 9.5 5-3.5 5-9.5 5-9.5-5-9.5-5Z"></path><circle cx="12" cy="12" r="2.2"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="status" id="login-status" role="alert" aria-live="polite" hidden></p>
+                    <button class="action-button" type="submit">LOGIN</button>
+                </form>
+                <a class="teacher-link" href="../trainer-portal.html">Login as teacher</a>
+            </section>
+
+            <section class="panel" id="password-panel" role="tabpanel" aria-labelledby="password-tab" hidden>
+                <p class="subtitle">Kindly provide the CNIC number and DOB used during Stellax Academy course registration.</p>
+                <form id="create-password-form" novalidate>
+                    <div class="field">
+                        <label for="password-cnic">CNIC <span aria-hidden="true">*</span></label>
+                        <input id="password-cnic" name="cnic" type="text" inputmode="numeric" autocomplete="username" placeholder="Enter CNIC number" required>
+                    </div>
+                    <div class="field">
+                        <label for="password-dob">DOB <span aria-hidden="true">*</span></label>
+                        <input id="password-dob" name="dob" type="date" autocomplete="bday" required>
+                    </div>
+                    <div class="field">
+                        <label for="create-password">Password <span aria-hidden="true">*</span></label>
+                        <div class="input-wrap">
+                            <input id="create-password" name="password" type="password" autocomplete="new-password" placeholder="Create password" minlength="6" required>
+                            <button class="toggle-password" type="button" data-password-toggle="create-password" aria-label="Show password" title="Show password">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-5 9.5-5 9.5 5 9.5 5-3.5 5-9.5 5-9.5-5-9.5-5Z"></path><circle cx="12" cy="12" r="2.2"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="status" id="password-status" role="alert" aria-live="polite" hidden></p>
+                    <button class="action-button" type="submit">SUBMIT</button>
+                </form>
+                <p class="required-note">Password must be at least 6 characters.</p>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/student-login.js"></script>
+</body>
+</html>

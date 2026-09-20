@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Stellax Academy student portal">
+    <title>Student Portal | Stellax Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/student-portal.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/modules.css">
+    <link rel="stylesheet" href="css/profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-config.js"></script>
+</head>
+<body>
+    <div class="portal-container">
+        <aside class="sidebar student-sidebar" aria-label="Student portal navigation">
+            <div class="sidebar-brand"><img src="../Images/stellax logo White.png" alt="Stellax Academy logo" width="500px"><button class="sidebar-collapse" type="button" aria-label="Collapse navigation"><i class="fa-solid fa-chevron-left"></i></button></div>
+            <nav class="student-sidebar__nav">
+                <button class="student-nav-link is-active" type="button" data-student-view="dashboard" aria-current="page"><i class="fa-solid fa-border-all"></i> Dashboard</button>
+                <button class="student-nav-link" type="button" data-student-view="progress"><i class="fa-solid fa-book-open"></i> Progress</button>
+                <button class="student-nav-link" type="button" data-student-view="attendance"><i class="fa-regular fa-calendar-check"></i> Attendance</button>
+                <button class="student-nav-link" type="button" data-student-view="payment"><i class="fa-regular fa-credit-card"></i> Payment</button>
+                <button class="student-nav-link" type="button" data-student-view="assignment"><i class="fa-regular fa-file-lines"></i> Assignment</button>
+                <button class="student-nav-link" type="button" data-student-view="quiz"><i class="fa-regular fa-square-check"></i> Quiz</button>
+            </nav>
+            <div class="profile-area">
+                <div class="profile-menu" id="profile-menu" hidden>
+                    <button type="button"><i class="fa-regular fa-user"></i> Profile</button>
+                    <button type="button" data-dark-mode-toggle><i class="fa-solid fa-moon"></i> Dark Mode <span class="toggle-switch" aria-hidden="true"></span></button>
+                    <button type="button" id="menu-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Log out</button>
+                </div>
+                <button class="profile-trigger" id="profile-trigger" type="button" aria-expanded="false" aria-controls="profile-menu"><span class="profile-avatar">S</span><span><strong id="sidebar-student-name">Student</strong><small id="sidebar-student-contact">Student</small></span><i class="fa-solid fa-ellipsis-vertical"></i></button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div id="dashboard-view" class="view-content active">
+                <div class="top-header">
+                    <div class="breadcrumb">Home &nbsp;&gt;&nbsp; <span id="breadcrumb-course">Modern Web Application Development</span></div>
+                    <button class="feedback-btn" type="button"><i class="fa-regular fa-comment-dots"></i> Feedback</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"><div><h2 id="attendance-stat">0/0</h2><p>Attendance</p></div><div class="icon-circle green"><i class="fa-regular fa-clock"></i></div></div>
+                    <div class="stat-card"><div><h2 id="assignment-stat">0/0</h2><p>Assignment</p></div><div class="icon-circle purple"><i class="fa-solid fa-graduation-cap"></i></div></div>
+                    <div class="schedule-card"><div class="schedule-header"><i class="fa-regular fa-calendar"></i> Class Schedule</div><div class="days-row"><div class="day-pill">Sun<span>13</span></div><div class="day-pill">Mon<span>14</span></div><div class="day-pill active">Tue<span>15</span></div><div class="day-pill">Wed<span>16</span></div><div class="day-pill">Thu<span>17</span></div><div class="day-pill">Fri<span>18</span></div><div class="day-pill active">Sat<span>19</span></div></div></div>
+                </div>
+
+                <div class="middle-grid">
+                    <div class="active-course-container">
+                        <h3 class="section-title">Active Course</h3>
+                        <div class="active-course-card">
+                            <div class="course-header"><h2 id="selected-course">Modern Web Application Development</h2><span class="enrolled-badge">ENROLLED</span></div>
+                            <div class="timing-pills"><span>Tue 11:00 AM - 1:00 PM</span><span>Sat 11:00 AM - 1:00 PM</span></div>
+                            <div class="progress-section"><div class="progress-labels"><span>Progress</span><span id="progress-label">0% Completed</span></div><div class="progress-bar-bg"><div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div></div></div>
+                            <div class="meta-grid"><div><i class="fa-solid fa-hashtag"></i> Batch: <span id="batch-name">18</span></div><div><i class="fa-solid fa-id-card"></i> Roll: <span id="profile-roll-number">484350</span></div><div><i class="fa-solid fa-location-dot"></i> Campus: Gulshan Campus</div><div><i class="fa-solid fa-city"></i> City: Karachi</div></div>
+                        </div>
+                    </div>
+                    <div class="upcoming-container"><div class="tab-header"><button type="button">Assignments</button><button class="active" type="button">Quizzes</button><button type="button">Events</button></div><div class="upcoming-body"><p>No upcoming quizzes</p></div></div>
+                </div>
+
+                <div class="fee-section">
+                    <h3 class="section-title">Fee</h3>
+                    <div class="table-card"><table><thead><tr><th>Month</th><th>Amount</th><th>Type</th><th>Due date</th><th>Voucher ID</th><th>Status</th></tr></thead><tbody id="fee-table-body"><tr><td colspan="6">Loading fee records...</td></tr></tbody></table></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="js/portal-navigation.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

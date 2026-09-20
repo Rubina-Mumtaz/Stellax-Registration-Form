@@ -1,0 +1,10 @@
+.profile-menu { position: absolute; right: 0; bottom: 63px; z-index: 5; width: 190px; padding: 7px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 14px 30px rgba(36, 52, 79, .14); }
+.profile-menu[hidden] { display: none; }
+.profile-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px; color: var(--ink); background: transparent; border: 0; border-radius: 6px; font-size: 11px; text-align: left; }
+.profile-menu button:hover { color: var(--blue); background: var(--blue-soft); }
+.profile-menu button:last-child { color: #d96363; }
+.profile-menu i { width: 15px; text-align: center; }
+.toggle-switch { width: 25px; height: 14px; margin-left: auto; padding: 2px; background: #dce2ec; border-radius: 99px; }
+.toggle-switch::after { content: ''; display: block; width: 10px; height: 10px; background: #fff; border-radius: 50%; transition: transform .2s ease; }
+body.dark-mode .toggle-switch { background: var(--blue); }
+body.dark-mode .toggle-switch::after { transform: translateX(11px); }

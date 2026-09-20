@@ -1,5 +1,7 @@
+let allStudents = [];
+
 document.addEventListener('DOMContentLoaded', () => {
-	const supabaseClient = window.supabaseClient;
+	const supabase = window.supabaseClient;
 	const loginSection = document.getElementById('login-section');
 	const dashboardSection = document.getElementById('dashboard-section');
 	const loginForm = document.getElementById('admin-login-form');
@@ -7,24 +9,24 @@ document.addEventListener('DOMContentLoaded', () => {
 	const logoutButton = document.getElementById('logout-button');
 	const tableBody = document.getElementById('student-table-body');
 	const rowTemplate = document.getElementById('student-row-template');
-	const searchInput = document.getElementById('student-search');
+	const searchInput = document.getElementById('search-input') || document.getElementById('student-search');
+	const searchButton = document.getElementById('student-search-button');
 	const courseFilter = document.getElementById('course-filter');
 	const batchFilter = document.getElementById('batch-filter');
 	const statusFilter = document.getElementById('status-filter');
 	const trainerForm = document.getElementById('trainer-form');
-	let students = [];
 
 	if (!loginSection || !dashboardSection || !loginForm || !tableBody) return;
 
-	const normalize = (value) => String(value || '').trim().toLowerCase();
-
+	const normalize = (value) => String(value ?? '').toLowerCase().trim();
+	const normalizeCnic = (value) => normalize(value).replace(/-/g, '');
 	const getStudentName = (student) => student.full_name || student.name || 'Unnamed Student';
 	const getFatherName = (student) => student.father_name || student.guardian_name || 'Not available';
 	const getRollNumber = (student) => student.roll_number || student.rollNumber || '';
 	const getCnic = (student) => student.cnic_number || student.cnic || student.cnicNumber || '';
 	const getPhone = (student) => student.phone || student.phone_number || student.whatsapp || student.father_phone || '';
 	const getCourse = (student) => student.course_selected || student.course || '';
-	const getBatch = (student) => student.batch_name || student.batch || student.batch_number || student.batch_preference || 'Batch-5';
+	const getBatch = (student) => student.batch || student.batch_preference || student.batch_name || student.batch_number || 'Pending';
 	const getStatus = (student) => student.status || student.admission_status || student.registration_status || 'Pending';
 
 	const setText = (id, value) => {
@@ -51,48 +53,42 @@ document.addEventListener('DOMContentLoaded', () => {
 		button.textContent = busy ? busyText : idleText;
 	};
 
-	const getFilteredStudents = () => {
-		const query = normalize(searchInput?.value);
-		const selectedCourse = normalize(courseFilter?.value);
-		const selectedBatch = normalize(batchFilter?.value);
-		const selectedStatus = normalize(statusFilter?.value);
-
-		return students.filter((student) => {
-			const searchableText = [getStudentName(student), getRollNumber(student), getCnic(student)]
-				.map(normalize)
-				.join(' ');
-			return (!query || searchableText.includes(query))
-				&& (!selectedCourse || normalize(getCourse(student)) === selectedCourse)
-				&& (!selectedBatch || normalize(getBatch(student)) === selectedBatch)
-				&& (!selectedStatus || normalize(getStatus(student)) === selectedStatus);
-		});
-	};
-
 	const updateStats = () => {
-		const pendingCount = students.filter((student) => normalize(getStatus(student)) === 'pending').length;
-		const approvedCount = students.filter((student) => normalize(getStatus(student)) === 'approved').length;
-		const batches = new Set(students.map(getBatch).filter(Boolean));
-		setText('total-students', students.length);
+		const pendingCount = allStudents.filter((student) => {
+			const status = String(student.status || '').toLowerCase().trim();
+			return status === 'pending'
+				|| status === 'unapproved'
+				|| status === ''
+				|| status === 'null';
+		}).length;
+		const approvedCount = allStudents.filter((student) => {
+			const status = String(student.status || '').toLowerCase().trim();
+			return status === 'approved' || status === 'active';
+		}).length;
+		const activeBatches = new Set(
+			allStudents
+				.map((student) => student.batch)
+				.filter((batch) => batch && batch !== 'Pending')
+		).size;
+
+		setText('total-students', allStudents.length);
 		setText('pending-approvals', pendingCount);
 		setText('active-students', approvedCount);
-		setText('active-batches', batches.size || 0);
+		setText('active-batches', activeBatches);
 	};
 
-	const renderEmptyState = (message = 'No student records available.') => {
+	const renderEmptyState = (message = 'No matching students found.') => {
 		tableBody.innerHTML = `<tr class="empty-state"><td colspan="9">${message}</td></tr>`;
 	};
 
-	const renderStudents = () => {
-		const filteredStudents = getFilteredStudents();
+	const renderTable = (students) => {
 		tableBody.innerHTML = '';
-
-		if (!filteredStudents.length) {
-			renderEmptyState('No students match the selected filters.');
-			updateStats();
+		if (!students.length) {
+			renderEmptyState();
 			return;
 		}
 
-		filteredStudents.forEach((student) => {
+		students.forEach((student) => {
 			const row = rowTemplate?.content.firstElementChild
 				? rowTemplate.content.firstElementChild.cloneNode(true)
 				: document.createElement('tr');
@@ -120,18 +116,55 @@ document.addEventListener('DOMContentLoaded', () => {
 				cell.textContent = value;
 				if (field === 'status') cell.dataset.status = value;
 			});
+			const approveButton = row.querySelector('[data-action="approve"]');
+			if (approveButton && student.id != null) {
+				approveButton.setAttribute('onclick', `approveStudent('${String(student.id).replace(/'/g, "\\'")}')`);
+			}
 
 			tableBody.appendChild(row);
 		});
-		updateStats();
+	};
+
+	const applyFilters = () => {
+		const query = normalize(searchInput?.value);
+		const compactQuery = normalizeCnic(query);
+		const selectedCourse = normalize(courseFilter?.value);
+		const selectedBatch = normalize(batchFilter?.value);
+		const selectedStatus = normalize(statusFilter?.value);
+
+		const filteredStudents = allStudents.filter((student) => {
+			const searchableText = [
+				student.full_name,
+				student.roll_number,
+				student.father_name,
+				student.phone,
+				student.phone_number
+			]
+				.map(normalize)
+				.join(' ');
+			const studentCnic = normalizeCnic(student.cnic_number);
+
+			return (!query || searchableText.includes(query) || studentCnic.includes(compactQuery))
+				&& (!selectedCourse || normalize(getCourse(student)) === selectedCourse)
+				&& (!selectedBatch || normalize(getBatch(student)) === selectedBatch)
+				&& (!selectedStatus || normalize(getStatus(student)) === selectedStatus);
+		});
+
+		renderTable(filteredStudents);
 	};
 
 	const loadStudents = async () => {
-		if (!supabaseClient) throw new Error('Supabase client is unavailable.');
-		const { data, error } = await supabaseClient.from('students').select('*');
+		if (!supabase) throw new Error('Supabase client is unavailable.');
+
+		const { data, error } = await supabase.from('students').select('*');
+		console.log('Admin students fetch data:', data);
+		console.log('Admin students fetch error:', error);
 		if (error) throw error;
-		students = data || [];
-		renderStudents();
+
+		allStudents = data || [];
+		updateStats();
+		applyFilters();
+
 		const updatedAt = document.getElementById('last-updated');
 		if (updatedAt) {
 			const now = new Date();
@@ -140,29 +173,86 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	};
 
-	const generateRollNumber = () => {
-		const numbers = students
-			.map(getRollNumber)
-			.map((rollNumber) => Number(String(rollNumber).match(/(\d+)$/)?.[1] || 0))
-			.filter(Number.isFinite);
-		const nextNumber = Math.max(2000, ...numbers) + 1;
-		return `FL-${nextNumber}`;
+	const generateRollNumber = (student) => {
+		const coursePrefixes = {
+			'digital marketing': 'DM',
+			'web & app development': 'WD',
+			'graphic designing': 'GA',
+			'video editing': 'VE',
+			freelancing: 'FL',
+			canva: 'CN'
+		};
+		const prefix = coursePrefixes[normalize(getCourse(student))] || 'FL';
+		const usedRollNumbers = new Set(allStudents.map(getRollNumber).filter(Boolean));
+		let number = 2001;
+		let candidate = `${prefix}-${number}`;
+		while (usedRollNumbers.has(candidate)) candidate = `${prefix}-${++number}`;
+		return candidate;
 	};
 
 	const updateStudentStatus = async (student, status) => {
 		if (!student.id) throw new Error('This student record has no database id.');
 		const updates = { status };
-		if (status === 'Approved' && !getRollNumber(student)) updates.roll_number = generateRollNumber();
-		const { error } = await supabaseClient.from('students').update(updates).eq('id', student.id);
+		if (status === 'Approved') {
+			updates.batch = 'Batch-5';
+			updates.roll_number = getRollNumber(student) || generateRollNumber(student);
+		}
+		const { error } = await supabase.from('students').update(updates).eq('id', student.id);
 		if (error) throw error;
 		await loadStudents();
 	};
 
-	const handleStudentAction = async (button) => {
+	window.approveStudent = async (studentId) => {
+		try {
+			if (!studentId) {
+				window.alert('Invalid Student ID!');
+				return;
+			}
+
+			const student = allStudents.find((item) => String(item.id) === String(studentId));
+			const courseName = String(getCourse(student || '')).toLowerCase().trim();
+			let prefix = 'ST-';
+			if (courseName.includes('canva')) prefix = 'CV-';
+			else if (courseName.includes('freelance')) prefix = 'FL-';
+			else if (courseName.includes('web')) prefix = 'WD-';
+			else if (courseName.includes('marketing') || courseName.includes('digital')) prefix = 'DM-';
+			else if (courseName.includes('graphic') || courseName.includes('design')) prefix = 'GD-';
+
+			const generatedRoll = prefix + Math.floor(1000 + Math.random() * 9000);
+
+			const { data, error } = await supabase
+				.from('students')
+				.update({
+					status: 'Approved',
+					batch_preference: 'Batch-5',
+					roll_number: generatedRoll
+				})
+				.eq('id', studentId)
+				.select();
+
+			if (error) {
+				console.error('Supabase Approval Error:', error);
+				window.alert(`Approval failed: ${error.message}`);
+				return;
+			}
+
+			console.log('Approved student:', data);
+			window.alert(`Student Approved Successfully! Roll No: ${generatedRoll}`);
+			await loadStudents();
+		} catch (error) {
+			console.error('Unexpected Error:', error);
+			window.alert(`Error approving student: ${error.message}`);
+		}
+	};
+
+	tableBody.addEventListener('click', async (event) => {
+		const button = event.target.closest('[data-action]');
+		if (!button) return;
 		const row = button.closest('tr');
-		const student = students.find((item) => String(item.id) === row?.dataset.studentId);
+		const student = allStudents.find((item) => String(item.id) === row?.dataset.studentId);
 		const action = button.dataset.action;
 		if (!student || !action) return;
+		if (action === 'approve') return;
 
 		if (action === 'delete' && !window.confirm(`Delete ${getStudentName(student)} from the student records?`)) return;
 		const originalText = button.textContent;
@@ -170,11 +260,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		try {
 			if (action === 'delete') {
-				const { error } = await supabaseClient.from('students').delete().eq('id', student.id);
+				const { error } = await supabase.from('students').delete().eq('id', student.id);
 				if (error) throw error;
 				await loadStudents();
 			} else {
-				await updateStudentStatus(student, action === 'approve' ? 'Approved' : 'Rejected');
+				await updateStudentStatus(student, 'Rejected');
 			}
 		} catch (error) {
 			console.error('Student action error:', error);
@@ -182,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		} finally {
 			setButtonBusy(button, false, 'Saving...', originalText);
 		}
-	};
+	});
 
 	loginForm.addEventListener('submit', async (event) => {
 		event.preventDefault();
@@ -201,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		setButtonBusy(submitButton, true, 'Signing in...', 'Login as Administrator');
 		try {
-			const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+			const { error } = await supabase.auth.signInWithPassword({ email, password });
 			if (error) throw error;
 			setView(true);
 			await loadStudents();
@@ -215,13 +305,17 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
-	[searchInput, courseFilter, batchFilter, statusFilter].forEach((control) => {
-		control?.addEventListener(control === searchInput ? 'input' : 'change', renderStudents);
-	});
-
-	tableBody.addEventListener('click', (event) => {
-		const button = event.target.closest('[data-action]');
-		if (button) handleStudentAction(button);
+	if (searchInput) {
+		searchInput.value = '';
+		searchInput.addEventListener('input', applyFilters);
+		searchInput.addEventListener('keyup', applyFilters);
+	}
+	searchButton?.addEventListener('click', applyFilters);
+	[courseFilter, batchFilter, statusFilter].forEach((control) => {
+		if (control) {
+			control.value = '';
+			control.addEventListener('change', applyFilters);
+		}
 	});
 
 	trainerForm?.addEventListener('submit', async (event) => {
@@ -237,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		setButtonBusy(submitButton, true, 'Adding...', 'Add Trainer');
 		try {
-			const { error } = await supabaseClient.from('trainers').insert(trainer);
+			const { error } = await supabase.from('trainers').insert(trainer);
 			if (error) throw error;
 			trainerForm.reset();
 			window.alert('Trainer added successfully.');
@@ -251,21 +345,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	logoutButton?.addEventListener('click', async () => {
 		try {
-			await supabaseClient?.auth.signOut();
+			await supabase?.auth.signOut();
 		} catch (error) {
 			console.error('Admin logout error:', error);
 		}
-		students = [];
+		allStudents = [];
 		loginForm.reset();
 		showError('');
-		renderEmptyState();
+		renderEmptyState('No student records available.');
 		setView(false);
 		document.getElementById('admin-email')?.focus();
 	});
 
 	const restoreSession = async () => {
-		if (!supabaseClient?.auth) return;
-		const { data } = await supabaseClient.auth.getSession();
+		if (!supabase?.auth) return;
+		const { data } = await supabase.auth.getSession();
 		if (!data.session) return;
 		setView(true);
 		try {
