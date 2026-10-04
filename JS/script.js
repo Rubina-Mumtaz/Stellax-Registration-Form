@@ -439,6 +439,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const checkedRadioGroups = new Set();
 
         form.querySelectorAll('input, select, textarea').forEach((field) => {
+            if (field.disabled) return;
+
             if (field.type === 'radio') {
                 if (checkedRadioGroups.has(field.name)) return;
                 checkedRadioGroups.add(field.name);
@@ -477,8 +479,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const gender = document.getElementById('gender')?.value
             || form.querySelector("input[name='gender']:checked")?.value || '';
         const email = document.getElementById('email')?.value?.trim() || '';
-        const phone = document.getElementById('phone')?.value?.trim() || '';
-        const guardianPhone = document.getElementById('father-phone')?.value?.trim()
+        const fatherPhone = document.getElementById('phone')?.value?.trim() || '';
+        const studentPhone = document.getElementById('father-phone')?.value?.trim()
             || document.getElementById('whatsapp')?.value?.trim() || '';
         const cnic = document.getElementById('cnic')?.value?.trim() || '';
         const address = document.getElementById('address')?.value?.trim() || '';
@@ -504,12 +506,11 @@ document.addEventListener('DOMContentLoaded', () => {
         hasErrors = setError('guardian-name', fatherName ? '' : "Please enter your father's / guardian's name.") || hasErrors;
         hasErrors = setError('date-of-birth', dob ? '' : 'Please enter your date of birth.') || hasErrors;
         hasErrors = setError('email', !email ? 'Please enter your email address.' : !EMAIL_PATTERN.test(email) ? 'Please enter a valid email address.' : '') || hasErrors;
-        hasErrors = setError('phone', !phone ? 'Please enter your phone number.' : !PHONE_PATTERN.test(phone.replace(/[\s().+-]/g, '')) ? 'Please enter a valid phone number.' : '') || hasErrors;
-        hasErrors = setError('whatsapp', !guardianPhone ? 'Please enter the student phone number.' : '') || hasErrors;
+        hasErrors = setError('phone', !fatherPhone ? 'Please enter your phone number.' : !PHONE_PATTERN.test(fatherPhone.replace(/[\s().+-]/g, '')) ? 'Please enter a valid phone number.' : '') || hasErrors;
+        hasErrors = setError('whatsapp', !studentPhone ? 'Please enter the student phone number.' : '') || hasErrors;
         hasErrors = setError('cnic', !cnic ? 'Please enter your CNIC / B-Form number.' : !CNIC_PATTERN.test(cnic) ? 'CNIC / B-Form must contain exactly 13 digits.' : '') || hasErrors;
         hasErrors = setError('course', course ? '' : 'Please select a course.') || hasErrors;
         hasErrors = setError('learning-mode', learningMode ? '' : 'Please choose a learning preference.') || hasErrors;
-        hasErrors = setError('shift', shift ? '' : 'Please choose a preferred shift.') || hasErrors;
         hasErrors = setError('agreement', agreement ? '' : 'Please confirm that your information is correct.') || hasErrors;
 
         const photoInput = document.getElementById('student-photo');
@@ -537,7 +538,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (phone && guardianPhone && phone.replace(/\D/g, '') === guardianPhone.replace(/\D/g, '')) {
+        if (fatherPhone && studentPhone && fatherPhone.replace(/\D/g, '') === studentPhone.replace(/\D/g, '')) {
             hasErrors = setError('whatsapp', 'Student and father phone numbers must be different.') || hasErrors;
         }
 
@@ -589,8 +590,8 @@ document.addEventListener('DOMContentLoaded', () => {
             dob: dob,
             gender: gender,
             email: email,
-            phone_number: phone,
-            guardian_phone: guardianPhone,
+            student_phone: studentPhone,
+            father_phone: fatherPhone,
             cnic_number: cnic,
             address: address,
             qualification: qualification,

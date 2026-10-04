@@ -424,6 +424,20 @@ legend span {
   flex-shrink: 0;
 }
 
+.shift-coming-soon-badge {
+  width: auto;
+  height: auto;
+  margin: 0 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid #dbe5ee;
+  border-radius: 999px;
+  color: #526579;
+  background: #f1f5f9;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
 /* FIELD GRID */
 .field-grid {
   display: grid;
@@ -701,6 +715,11 @@ textarea::placeholder {
   cursor: not-allowed;
   pointer-events: none;
   background-color: #f1f5f9;
+}
+
+#shift-group .disabled-option {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .badge-coming-soon {

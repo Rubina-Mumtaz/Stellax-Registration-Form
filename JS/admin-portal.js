@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const getFatherName = (student) => student.father_name || student.guardian_name || 'Not available';
 	const getRollNumber = (student) => student.roll_number || student.rollNumber || '';
 	const getCnic = (student) => student.cnic_number || student.cnic || student.cnicNumber || '';
-	const getPhone = (student) => student.phone || student.phone_number || student.whatsapp || student.father_phone || '';
+	const getPhone = (student) => [student.student_phone, student.father_phone].filter(Boolean).join(' / ');
 	const getCourse = (student) => student.course_selected || student.course || '';
 	const getBatch = (student) => student.batch || student.batch_preference || student.batch_name || student.batch_number || 'Pending';
 	const getStatus = (student) => student.status || student.admission_status || student.registration_status || 'Pending';
@@ -148,8 +148,8 @@ document.addEventListener('DOMContentLoaded', () => {
 				student.full_name,
 				student.roll_number,
 				student.father_name,
-				student.phone,
-				student.phone_number
+				student.student_phone,
+				student.father_phone
 			]
 				.map(normalize)
 				.join(' ');

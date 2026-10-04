@@ -127,13 +127,14 @@
 							<div class="field-grid two-columns">
 								<div class="field field-required">
 									<label for="email">Email Address <span aria-hidden="true">*</span></label>
-									<input type="email" id="email" name="email" autocomplete="email" required>
+									<input type="email" id="email" name="email" autocomplete="email"
+										placeholder="example@gmail.com" required>
 									<p class="error-message" id="email-error" role="alert"></p>
 								</div>
 								<div class="field field-required">
 									<label for="phone">Father's Phone Number <span aria-hidden="true">*</span></label>
 									<input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel"
-										required>
+										placeholder="03001234567" required>
 									<p class="error-message" id="phone-error" role="alert"></p>
 								</div>
 								<div class="field field-required">
@@ -145,17 +146,18 @@
 								<div class="field">
 									<label for="whatsapp">Student Phone Number <span aria-hidden="true">*</span></label>
 									<input type="tel" id="whatsapp" name="whatsapp" inputmode="tel" autocomplete="tel"
-										required>
+										placeholder="03001234567" required>
 									<p class="error-message" id="whatsapp-error" role="alert"></p>
 								</div>
 								<div class="field">
 									<label for="city">City</label>
-									<input type="text" id="city" name="city" autocomplete="address-level2" required>
+									<input type="text" id="city" name="city" autocomplete="address-level2"
+										placeholder="Karachi" required>
 								</div>
 								<div class="field field-full">
 									<label for="address">Address</label>
 									<textarea id="address" name="address" rows="3" autocomplete="street-address"
-										required></textarea>
+										placeholder="House / Flat No., Block, Area" required></textarea>
 								</div>
 							</div>
 						</fieldset>
@@ -223,15 +225,14 @@
 						</fieldset>
 
 						<fieldset>
-							<legend><span>06</span> Preferred Shift</legend>
-							<div class="field field-required">
-								<span class="field-label">Choose one <span aria-hidden="true">*</span></span>
-								<div class="preference-grid" id="shift-group">
-									<label class="preference"><input type="radio" name="shift" value="Morning" required><span>Morning</span></label>
-									<label class="preference"><input type="radio" name="shift" value="Afternoon" required><span>Afternoon</span></label>
-									<label class="preference"><input type="radio" name="shift" value="Evening" required><span>Evening</span></label>
+							<legend><span>06</span> Preferred Shift <span class="shift-coming-soon-badge">Coming Soon (Physical Classes Only)</span></legend>
+							<div class="field">
+								<span class="field-label">Shift selection is currently unavailable.</span>
+								<div class="preference-grid" id="shift-group" aria-disabled="true">
+									<label class="preference disabled-option"><input type="radio" name="shift" value="Morning" disabled><span>Morning</span></label>
+									<label class="preference disabled-option"><input type="radio" name="shift" value="Afternoon" disabled><span>Afternoon</span></label>
+									<label class="preference disabled-option"><input type="radio" name="shift" value="Evening" disabled><span>Evening</span></label>
 								</div>
-								<p class="error-message" id="shift-error" role="alert"></p>
 							</div>
 						</fieldset>
 
