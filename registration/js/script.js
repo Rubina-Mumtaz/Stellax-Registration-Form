@@ -1,11 +1,3 @@
-// ==================================================
-// Stellax Academy — Registration Form Logic
-// Handles validation + Supabase insertion for the
-// student registration form on registration/index.html.
-// Loads with `defer` AFTER shared/supabase.js,
-// so window.supabaseClient is already initialized.
-// ==================================================
-
 document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_AVATAR_URL = 'assets/default-avatar.png';
     const DEFAULT_ID_CARD_IMAGE = 'assets/Stellax-ID-Card-Logo.jpeg';
@@ -37,9 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
             'graphic designing': 'GD-',
             'digital marketing': 'DM-',
             'video editing': 'VE-',
-            canva: 'CN-',
-            capcut: 'CC-',
-            '2d animation': '2A-'
+            'canva': 'CN-',
+            'capcut': 'CC-',
+            '2d animation': '2A-',
+            'microsoft': 'MS-'
         };
         return coursePrefixes[normalizedCourse] || 'ST-';
     };
@@ -129,14 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const supabaseClient = window.supabaseClient;
     const normalizeLookupValue = (value) => String(value || '').trim();
     const normalizeCnic = (value) => normalizeLookupValue(value).replace(/\D/g, '');
-    const isValidCnic = (value) => /^(?:\d{13}|\d{5}-\d{7}-\d)$/.test(normalizeLookupValue(value));
+    const isValidCnic = (value) => {
+        const clean = normalizeCnic(value);
+        return clean.length === 13;
+    };
     const getLookupStudent = async (rollNumber, cnicNumber) => {
         if (!supabaseClient) throw new Error('Database connection unavailable.');
         const { data, error } = await supabaseClient
             .from('students')
             .select('*')
             .eq('roll_number', normalizeLookupValue(rollNumber).toUpperCase())
-            .eq('cnic_number', normalizeLookupValue(cnicNumber))
+            .eq('cnic_number', normalizeCnic(cnicNumber))
             .maybeSingle();
         if (error) throw error;
         return data;
@@ -472,17 +468,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // ---- Safely capture values (optional chaining prevents
         //      "Cannot read properties of null" errors) ----
         const fullName = document.getElementById('full-name')?.value?.trim() || '';
-        const fatherName = document.getElementById('father-name')?.value?.trim()
-            || document.getElementById('guardian-name')?.value?.trim() || '';
-        const dob = document.getElementById('dob')?.value?.trim()
-            || document.getElementById('date-of-birth')?.value?.trim() || null;
+        const fatherName = document.getElementById('guardian-name')?.value?.trim() || '';
+        const dob = document.getElementById('date-of-birth')?.value?.trim() || null;
         const gender = document.getElementById('gender')?.value
             || form.querySelector("input[name='gender']:checked")?.value || '';
         const email = document.getElementById('email')?.value?.trim() || '';
         const fatherPhone = document.getElementById('phone')?.value?.trim() || '';
-        const studentPhone = document.getElementById('father-phone')?.value?.trim()
-            || document.getElementById('whatsapp')?.value?.trim() || '';
-        const cnic = document.getElementById('cnic')?.value?.trim() || '';
+        const studentPhone = document.getElementById('whatsapp')?.value?.trim() || '';
+        const cnic = normalizeCnic(document.getElementById('cnic')?.value);
         const address = document.getElementById('address')?.value?.trim() || '';
         const qualification = document.getElementById('qualification')?.value || '';
         const course = document.getElementById('course')?.value || '';

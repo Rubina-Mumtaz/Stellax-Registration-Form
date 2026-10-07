@@ -19,24 +19,18 @@
 	<link rel="stylesheet" href="css/id-card.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-	<!-- 1. Supabase CDN Library (must load first) -->
+	<!-- 1. Supabase JS SDK CDN -->
 	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js"></script>
-
-	<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
-	<script src="../shared/supabase.js"></script>
-
-	<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
-	<script src="js/script.js" defer></script>
 </head>
 
 <body>
 	<div class="page-shell">
 		<header class="site-header">
 			<div class="header-inner">
-				<a class="brand" href="../website/" aria-label="Stellax Academy home">
+				<a class="brand" href="index.html" aria-label="Stellax Academy home">
 					<img src="assets/stellax logo White.png" alt="Stellax Academy logo">
 				</a>
 				<div class="header-copy">
@@ -173,11 +167,11 @@
 										<option value="Graphic Designing">Graphic Designing</option>
 										<option value="Digital Marketing">Digital Marketing</option>
 										<option value="Video Editing">Video Editing</option>
-										<option value="2D animation">2D Animation</option>
-										<option value="freelancing">Freelancing</option>
-										<option value="capcut">CapCut</option>
-										<option value="canva">Canva</option>
-										<option value="microsoft">Microsoft</option>
+										<option value="2D Animation">2D Animation</option>
+										<option value="Freelancing">Freelancing</option>
+										<option value="CapCut">CapCut</option>
+										<option value="Canva">Canva</option>
+										<option value="Microsoft">Microsoft</option>
 
 									</select>
 									<p class="error-message" id="course-error" role="alert"></p>
@@ -417,6 +411,11 @@
 		<footer class="site-footer">&copy; Stellax Academy. All Rights Reserved.</footer>
 	</div>
 
+	<!-- 2. Supabase Config (Initializes window.supabaseClient) -->
+	<script src="../Supabase/supabase.js"></script>
+
+	<!-- 3. Main Application Script -->
+	<script src="js/script.js"></script>
 </body>
 
 </html>

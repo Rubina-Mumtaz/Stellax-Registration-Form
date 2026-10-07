@@ -19,7 +19,7 @@
   position: relative;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   width: 100%;
   max-width: 380px !important;
   min-height: 240px;
@@ -100,18 +100,20 @@
 
 .id-card-front-body {
   display: flex !important;
-  felx-direction: row !important;
-  align-item: center;
+  flex: 1;
+  flex-direction: row !important;
+  align-items: center !important;
   gap: 12px;
-  padding: 12px;
+  padding: 10px 14px 24px 14px;
   background: #f8fbfc;
 }
 
 .id-card-photo {
   display: grid;
   place-items: center;
-  width: 90px !important;
-  height: 100px !important;
+  width: 80px !important;
+  height: 90px !important;
+  margin: auto 0;
   flex-shrink: 0;
   overflow: hidden;
   border: 2px solid #176b72;
@@ -141,6 +143,7 @@
 .id-card-details {
   display: flex;
   flex-direction: column;
+  align-self: center;
   gap: 4px;
   flex: 1;
   min-width: 0;
@@ -192,7 +195,7 @@
 }
 
 .id-card-back-content {
-  padding: 8px 14px 4px !important;
+  padding: 8px 14px 28px !important;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -218,13 +221,12 @@
   align-items: flex-end;
   justify-content: space-between;
   margin-top: 4px !important;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
 .signature-container {
   min-width: 0;
   max-width: 120px;
-  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -252,9 +254,9 @@
 }
 
 .qr-code-container {
-  width: 45px;
-  height: 45px;
-  margin-bottom: 10px;
+  box-sizing: border-box;
+  width: 52px;
+  height: 52px;
   padding: 2px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
@@ -308,13 +310,6 @@
   }
 }
 
-/* @media (max-width: 440px) {
-  .id-card {
-    width: min(380px, calc(100vw - 32px));
-    flex-basis: min(380px, calc(100vw - 32px));
-  }
-} */
-
 @media (max-width: 768px) {
   #id-card-wrapper,
   .id-card-wrapper,
@@ -334,28 +329,5 @@
     max-width: 100% !important;
     width: 100% !important;
     box-sizing: border-box;
-  }}
-
-  /* .card-front .card-body,
-  .id-card-front .id-card-front-body {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    gap: 15px !important;
   }
 }
-
-@media (max-width: 768px) {
-  .id-card-wrapper.pdf-export {
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    width: 780px !important;
-    overflow-x: visible;
-  }
-
-  .id-card-wrapper.pdf-export .id-card {
-    min-width: 0 !important;
-    max-width: none !important;
-    width: 380px !important;
-  }
-} */
