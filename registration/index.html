@@ -26,18 +26,18 @@
 	<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js"></script>
 
 	<!-- 2. Supabase Configuration (creates window.supabaseClient) -->
-	<script src="supaBase/supabase.js"></script>
+	<script src="../shared/supabase.js"></script>
 
 	<!-- 3. Form Logic & Validation (deferred, runs after DOM is ready) -->
-	<script src="JS/script.js" defer></script>
+	<script src="js/script.js" defer></script>
 </head>
 
 <body>
 	<div class="page-shell">
 		<header class="site-header">
 			<div class="header-inner">
-				<a class="brand" href="index.html" aria-label="Stellax Academy home">
-					<img src="Images/stellax logo White.png" alt="Stellax Academy logo">
+				<a class="brand" href="../website/" aria-label="Stellax Academy home">
+					<img src="assets/stellax logo White.png" alt="Stellax Academy logo">
 				</a>
 				<div class="header-copy">
 					<p class="eyebrow">Admissions Open</p>
@@ -177,6 +177,8 @@
 										<option value="freelancing">Freelancing</option>
 										<option value="capcut">CapCut</option>
 										<option value="canva">Canva</option>
+										<option value="microsoft">Microsoft</option>
+
 									</select>
 									<p class="error-message" id="course-error" role="alert"></p>
 								</div>
@@ -297,7 +299,7 @@
 							<article class="id-card id-card-front" aria-label="Student ID card front">
 								<header class="card-header">
 									<div class="brand-group">
-										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo"
+										<img src="assets/stellax logo White.png" alt="Stellax Academy Logo"
 											class="id-card-logo">
 										<div class="brand-text">
 											<h2>STELLAX ACADEMY</h2>
@@ -307,8 +309,8 @@
 								</header>
 								<div class="id-card-front-body">
 									<div class="id-card-photo photo-container"><img id="preview-photo"
-											src="Images/Stellax-ID-Card-Logo.jpeg" alt="Student profile photo"
-											onerror="this.onerror=null; this.src='Images/Stellax-ID-Card-Logo.jpeg';" hidden><span
+											src="assets/Stellax-ID-Card-Logo.jpeg" alt="Student profile photo"
+											onerror="this.onerror=null; this.src='assets/Stellax-ID-Card-Logo.jpeg';" hidden><span
 											id="preview-photo-placeholder">PHOTO</span></div>
 									<dl class="id-card-details">
 										<div>
@@ -337,7 +339,7 @@
 							<article class="id-card id-card-back" aria-label="Student ID card back">
 								<header class="card-header">
 									<div class="brand-group">
-										<img src="Images/stellax logo White.png" alt="Stellax Academy Logo"
+										<img src="assets/stellax logo White.png" alt="Stellax Academy Logo"
 											class="id-card-logo">
 										<div class="brand-text">
 											<h2>STELLAX ACADEMY</h2>
@@ -354,7 +356,7 @@
 									</ol>
 									<div class="id-card-verification">
 										<div class="signature-container">
-											<img src="Images/Admin-Signature.png" alt="Administrator Signature"
+											<img src="assets/Admin-Signature.png" alt="Administrator Signature"
 												class="admin-signature-img">
 											<span class="signature-divider" aria-hidden="true"></span>
 											<span class="signature-label">Authorized Signature / Administrator</span>

@@ -1,14 +1,14 @@
 // ==================================================
 // Stellax Academy — Registration Form Logic
 // Handles validation + Supabase insertion for the
-// student registration form on index.html.
-// Loads with `defer` AFTER supaBase/supabase.js,
+// student registration form on registration/index.html.
+// Loads with `defer` AFTER shared/supabase.js,
 // so window.supabaseClient is already initialized.
 // ==================================================
 
 document.addEventListener('DOMContentLoaded', () => {
     const DEFAULT_AVATAR_URL = 'assets/default-avatar.png';
-    const DEFAULT_ID_CARD_IMAGE = 'Images/Stellax-ID-Card-Logo.jpeg';
+    const DEFAULT_ID_CARD_IMAGE = 'assets/Stellax-ID-Card-Logo.jpeg';
     const form = document.getElementById('registration-form');
     const status = document.getElementById('form-status');
     const photoInput = document.getElementById('student-photo');

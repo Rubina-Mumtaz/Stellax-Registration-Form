@@ -2,7 +2,7 @@
 // Supabase Client Configuration
 // Initializes the Supabase client and exposes
 // it globally as window.supabaseClient.
-// (Form logic lives in JS/script.js)
+// Shared by the registration, student, trainer, and admin projects.
 // ============================================
 
 const SUPABASE_URL = 'https://cqquvlkxoqduxtvmcjzc.supabase.co';
