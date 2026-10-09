@@ -19,11 +19,6 @@
 	<link rel="stylesheet" href="css/id-card.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
-	<!-- 1. Supabase JS SDK CDN -->
-	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js"></script>
 </head>
 
 <body>
@@ -411,10 +406,13 @@
 		<footer class="site-footer">&copy; Stellax Academy. All Rights Reserved.</footer>
 	</div>
 
-	<!-- 2. Supabase Config (Initializes window.supabaseClient) -->
-	<script src="../Supabase/supabase.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/dom-to-image-more@3.1.6/dist/dom-to-image-more.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-	<!-- 3. Main Application Script -->
+	<!-- Supabase config (initializes window.supabaseClient) -->
+	<script src="js/supabase.js"></script>
 	<script src="js/script.js"></script>
 </body>
 
