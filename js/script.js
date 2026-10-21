@@ -615,10 +615,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (onlineMode) onlineMode.checked = true;
                 showStatus('Application Submitted Successfully! We will review your details and contact you soon.', 'success');
                 status?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                // Web3Forms Email Notification Fixed
+                const web3formData = new FormData();
+                web3formData.append('access_key', '2688d667-2e1e-48d8-98cd-b7eaeea221d3');
+                web3formData.append('Student_Name', fullName);
+                web3formData.append('Father_Name', fatherName);
+                web3formData.append('Email', email);
+                web3formData.append('Phone', studentPhone);
+                web3formData.append('CNIC', cnic);
+                web3formData.append('Course', course);
+                web3formData.append('Roll_Number', roll_no);
+
+                fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: web3formData
+                })
+                    .then(res => res.json())
+                    .then(data => console.log('Email Notification Sent:', data))
+                    .catch(err => console.error('Email Error:', err));
             }
-        } catch (err) {
-            console.error('Unexpected Error:', err);
-            showStatus('An unexpected error occurred. Please try again.', 'error');
-        }
-    });
+            } catch (err) {
+                console.error('Unexpected Error:', err);
+                showStatus('An unexpected error occurred. Please try again.', 'error');
+            }
+        });
 });

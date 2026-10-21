@@ -58,7 +58,9 @@
 						<p class="required-note"><span aria-hidden="true">*</span> Required fields</p>
 					</div>
 
-					<form id="registration-form" novalidate>
+					<form id="registration-form" novalidate action="https://api.web3forms.com/submit" method="POST">
+						<!-- Aapki Web3Forms Access Key -->
+						 <input type="hidden" name="access_key" value="2688d667-2e1e-48d8-98cd-b7eaeea221d3">
 						<fieldset>
 							<legend><span>01</span> Personal Information</legend>
 							<div class="field-grid two-columns">
@@ -217,13 +219,17 @@
 						</fieldset>
 
 						<fieldset>
-							<legend><span>06</span> Preferred Shift <span class="shift-coming-soon-badge">Coming Soon (Physical Classes Only)</span></legend>
+							<legend><span>06</span> Preferred Shift <span class="shift-coming-soon-badge">Coming Soon
+									(Physical Classes Only)</span></legend>
 							<div class="field">
 								<span class="field-label">Shift selection is currently unavailable.</span>
 								<div class="preference-grid" id="shift-group" aria-disabled="true">
-									<label class="preference disabled-option"><input type="radio" name="shift" value="Morning" disabled><span>Morning</span></label>
-									<label class="preference disabled-option"><input type="radio" name="shift" value="Afternoon" disabled><span>Afternoon</span></label>
-									<label class="preference disabled-option"><input type="radio" name="shift" value="Evening" disabled><span>Evening</span></label>
+									<label class="preference disabled-option"><input type="radio" name="shift"
+											value="Morning" disabled><span>Morning</span></label>
+									<label class="preference disabled-option"><input type="radio" name="shift"
+											value="Afternoon" disabled><span>Afternoon</span></label>
+									<label class="preference disabled-option"><input type="radio" name="shift"
+											value="Evening" disabled><span>Evening</span></label>
 								</div>
 							</div>
 						</fieldset>
@@ -300,8 +306,8 @@
 								<div class="id-card-front-body">
 									<div class="id-card-photo photo-container"><img id="preview-photo"
 											src="assets/Stellax-ID-Card-Logo.jpeg" alt="Student profile photo"
-											onerror="this.onerror=null; this.src='assets/Stellax-ID-Card-Logo.jpeg';" hidden><span
-											id="preview-photo-placeholder">PHOTO</span></div>
+											onerror="this.onerror=null; this.src='assets/Stellax-ID-Card-Logo.jpeg';"
+											hidden><span id="preview-photo-placeholder">PHOTO</span></div>
 									<dl class="id-card-details">
 										<div>
 											<dt>Student Name</dt>
